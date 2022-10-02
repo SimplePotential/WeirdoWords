@@ -536,6 +536,14 @@ div.footer a:hover
     text-shadow: 2px 2px 4px #070707;
 }
 
+#overlay_main_volume
+{
+    width: 50%;
+    margin: .75rem auto;
+    text-align: center;
+
+}
+
 @keyframes matched
 {
     0%
