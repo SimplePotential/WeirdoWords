@@ -744,7 +744,6 @@ function ShowTitleOverlay()
 
 function ChangeVolume()
 {
-    console.log(volLevel);
     volLevel = parseFloat(volSlider.value);
     sound_gameover.play();
 }
