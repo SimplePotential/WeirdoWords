@@ -39,6 +39,7 @@ let gameTimerMax = 10000; // Milliseconds
 let gameTimerInterval = 1000;
 let gameTimeBonusTicks = 2;
 let isGameOver = false;
+let volLevel = .5;
 
 let dlgConsent = null;
 let dlgGameOver = null;
@@ -48,6 +49,12 @@ let score = 0;
 let points_Correct = 100;
 let points_Incorrect = -20;
 let points_Bonus = 5;
+
+let volSlider = null;
+let sound_place = null;
+let sound_gameover = null;
+let sound_wrong = null;
+let sound_correct = null;
 
 function Init()
 {
@@ -69,6 +76,8 @@ function Init()
 
     overlayCnt = document.getElementById("overlay");
 
+    volSlider = document.getElementById("volume");
+
     // Get the score display holder
     scoreCnt = document.getElementById("score");
     UpdateScore(0);
@@ -76,6 +85,10 @@ function Init()
     isGameOver = false;
 
     gameTimerTicks = gameTimerMax;
+
+    volLevel = parseFloat(volSlider.value);
+
+    SetupSounds();
 
     ShowTitleOverlay();
 
@@ -87,6 +100,8 @@ function StartGame()
     {
         overlay.classList.add("hidden");
     }
+
+    sound_correct.play();
 
     DoNextWordCheck();
 }
@@ -138,6 +153,8 @@ function DoNextWordCheck()
             // Log the fact that the player didn't solve the word before time ended
             attempts.push({jumble: solvedWords, word: `<i>${finWord}</i>`, match: false});
             WriteAttempts();
+
+            sound_wrong.play();
 
             // Adjust score
             UpdateScore(points_Incorrect);
@@ -398,16 +415,21 @@ function DropTile(target, source)
     source.classList.add("empty_tile");
     source.draggable = false;
     target.dataset.placed = 1;
+
+    sound_place.play();
+
     let isMatch = MatchCheck();
     if(isMatch > 0){ WriteAttempts(); }
     if(isMatch == 3)
     {
+        sound_correct.play();
         UpdateScore(points_Correct + (points_Bonus * (gameTimerTicks / gameTimerInterval)));
         ClearGameTimer();
         setTimeout(DoNextWordCheck, 2000); // Allow the animation to play out
     }
     if(isMatch == 1)
     {
+        sound_wrong.play();
         UpdateScore(points_Incorrect);
         setTimeout(ResetWord, 1000);
     }
@@ -671,6 +693,7 @@ function CreateGameOver()
 
 async function ShowGameOver()
 {
+    sound_gameover.play();
     await dlgGameOver.ShowDialog().then(result => {
         if(dlgGameOver.userResponse == 1)
         {
@@ -717,4 +740,47 @@ function ShowTitleOverlay()
     document.getElementById("bonusSecondsMax").innerHTML = gameTimerMax / gameTimerInterval;
 
     overlayCnt.classList.remove("hidden");
+}
+
+function ChangeVolume()
+{
+    console.log(volLevel);
+    volLevel = parseFloat(volSlider.value);
+    sound_gameover.play();
+}
+
+/*
+	setup all sounds used in the game
+*/
+function SetupSounds()
+{
+	sound_place = new Sound("place.wav", volLevel);
+	sound_gameover = new Sound("gameover.wav", volLevel);
+    sound_wrong = new Sound("wrong.wav", volLevel);
+    sound_correct = new Sound("correct.wav", volLevel);
+}
+
+/*
+	Creates a new sound and pre-loads it.  Returns a sound object that can be used to start/stop a sound during game play
+	Largely Taken from https://www.w3schools.com/graphics/tryit.asp?filename=trygame_sound
+	Easy of use, no reason to reinvent wheel
+*/
+function Sound(source, vol, loop = false)
+{
+	this.sound = document.createElement("audio");
+	this.sound.src = source;
+	this.sound.setAttribute("preload", "auto");
+	this.sound.setAttribute("controls", "none");
+	this.sound.style.display = "none";
+	this.sound.volume = vol;
+	this.sound.loop = loop;
+	document.body.appendChild(this.sound);
+	this.paused = this.sound.paused;
+	this.play = function(){
+        if(volLevel > 0 && this.sound.paused){ this.sound.currentTime = 0; this.sound.volume = volLevel; this.sound.play(); }
+	}
+	this.stop = function(){
+		this.sound.pause();
+		this.sound.currentTime = 0;
+	}
 }
