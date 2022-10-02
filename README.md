@@ -5,4 +5,4 @@ I'll update the ReadMe at a later date.
 
 Play the game at:  https://simplepotential.com/projects/LD51/game.htm
 
-View the Ludum Dare Entry and Rate here:  https://ldjam.com/events/ludum-dare/51/$299002
+View the Ludum Dare Entry and Rate here:  https://ldjam.com/events/ludum-dare/51/weirdo-words
