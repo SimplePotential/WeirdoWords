@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Weirdo Words - A Word Jumble Game</title>
+        <link href='https://fonts.googleapis.com/css?family=Atma' rel='stylesheet'>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" href="game.css"/>
+		<script src="js/words_easy.js"></script>
+        <script src="js/spDialog.min.js"></script>
+        <script src="js/game.js" defer></script>
+        <!--
+            NOTE: spDialog is available free to use to all with full source code available on my GitHub at:
+            https://github.com/SimplePotential/spDialog
+
+            Additional documentation at: https://simplepotential.github.io/spDialog/
+
+            It is still a work in progress but perfectly usable.
+        -->
+	</head>
+	<body onload="Init()">
+        <div id="gameHolder" class="game">
+            <div id="gameTitle">Weirdo Words</div>
+            <div id="jumbled" class="jumble">
+
+            </div>
+            <div id="solutions">
+            </div>
+            <div id="msg">
+            </div>
+            <div id="timerHolder">
+                <div id="timerbarTxt"></div>
+                <div id="timerbar"></div>                
+            </div>
+            <div id="summary" class="summary">
+                <div id="attempts" class="summary-child">
+                     
+                </div>
+                <div id="controls" class="summary-child">
+                    <div id="scoreHolder">
+                        <div id="score">0</div>
+                    </div>
+                </div>
+            </div>
+            <div id="word_of_word"></div>
+            <div id="help">
+                <div class="material-icons icons" id="btnRestart" title="Restart Game" onclick="RestartGame()">refresh</div>
+            </div>
+            <div id="footer" class="footer">
+                <a href="https://www.simplepotential.com" target="_blank">&copy; Simple Potential</a> | 
+                GitHub Source | 
+                <a href="https://ldjam.com/events/ludum-dare/51/$299002" target="_blank">Ludum Dare Entry</a> | 
+                <a href="https://github.com/SimplePotential/spDialog" target="_blank">spDialog</a>
+            </div>
+            <div id="overlay" class="hidden">
+                <div id="overlay_main">
+                    <div style='width: 100%; text-align: center; font-family: Atma; font-size: 2rem; text-shadow: 2px 2px 4px var(--game-border);'>WEIRDO WORDS</div>
+                    <div style="text-align: center;">
+                        This is a Ludum Dare 51 Entry.  A post competition version of game is planned.
+                    </div>
+                    <div id="overlay_main_rules">
+                        <ol>
+                            <li>You will be given a set of 10 semi-random words.  The words you get will change each day at approximately Midnight local time.</li>
+                            <li>You have 10 seconds to guess the word before the game moves onto the next word in the list.</li>
+                            <li>The easiest way to play is to simply type the letters you want to place.</li>
+                            <li>You can also drag/drop the letters or simply click the letter to place it in the next available slot.</li>
+                            <li>Backspace or clicking on a letter in play will move the letter back to the tile list.</li>
+                            <li>You'll receive <span id="pointsCorrect"></span> points for a correct guess and lose <span id="pointsIncorrect"></span> points for an incorrect guess.</li>
+                            <li>For each second left on the clock, you'll earn <span id="pointsBonus"></span> bonus points.</li>
+                            <li>All guesses will appear in the left side list.</li>
+                            <li>A correct guess is green with a check mark, a wrong guess is red with an X.</li>
+                            <li>Missing a word entirely will show as wrong but also be in italics and display what the word was.</li>
+                            <li>Wrong guess will have any letters in the correct position underlined and you'll gain <span id="bonusSeconds"></span> seconds (up to <span id="bonusSecondsMax"></span> seconds total) if at least 1 letter was correct.</li>
+                        </ol>
+                    </div>
+
+                    <div id="overlay_main_menu">
+                        <button onclick="StartGame()">Timed Daily</button>
+                        <button disabled>Infinite Play</button>
+                    </div>
+
+                    <div style="text-align: center;">
+                        Timed Daily is the only mode available for Ludum Dare.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </body>
+</html>
