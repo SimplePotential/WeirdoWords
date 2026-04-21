@@ -2,6 +2,21 @@ const wordList = wordList_Easy;
 const symMatch = "&checkmark;";
 const symNoMatch = "&cross;";
 const symMissed = "-";
+
+// ============================================================
+// GAME CONFIGURATION
+// Adjust these values to tune gameplay balance and scoring.
+// ============================================================
+const maxWords = 10;                // Number of words per run
+const gameTimerMax = 15000;         // Milliseconds per word
+const gameTimerInterval = 1000;     // Timer tick interval (ms)
+const gameTimeBonusTicks = 2;       // Extra ticks awarded for a partial correct guess
+const points_Correct = 100;         // Points for a correct word
+const points_Incorrect = -20;       // Points deducted for an incorrect guess
+const points_Bonus = 5;             // Bonus points per second remaining on correct answer
+const showCorrectPos = true;        // Underline correctly placed letters (set false for hard mode)
+// ============================================================
+
 const progression = [
     {mn: 3, mx: 3},
     {mn: 4, mx: 4},
@@ -28,16 +43,11 @@ let overlayCnt;
 
 let gameMode = 0; // Timed words; Infinite Play?  Other modes in future?  Limit to a day key similar to Wordle?
 let solvedWords = 0;
-let maxWords = 10;
 let attempts = new Array();
 let finWord;
 let picked = new Array();
-let showCorrectPos = true;  // Maybe a hard mode that doesn't show you correctly placed letters/
 let gameTimer = null;
 let gameTimerTicks = 0;
-let gameTimerMax = 15000; // Milliseconds
-let gameTimerInterval = 1000;
-let gameTimeBonusTicks = 2;
 let isGameOver = false;
 let volLevel = .5;
 
@@ -46,9 +56,6 @@ let dlgGameOver = null;
 let dlgResetGame = null;
 
 let score = 0;
-let points_Correct = 100;
-let points_Incorrect = -20;
-let points_Bonus = 5;
 
 let volSlider = null;
 let sound_place = null;
@@ -129,7 +136,7 @@ function CheckTimer()
         let timerPercent = (gameTimerTicks / gameTimerMax) * 100;
         timerPercent = Math.max(0, Math.min(100, timerPercent));
         timerCnt.style.width = timerPercent.toString() + "%";
-        timerCntTxt.innerHTML = (gameTimerTicks/gameTimerInterval).toString() + " Seconds";
+        timerCntTxt.textContent = (gameTimerTicks/gameTimerInterval).toString() + " Seconds";
 
         // Reduce timer
         gameTimerTicks -= gameTimerInterval;
@@ -170,7 +177,7 @@ function DoNextWordCheck()
 
     // Update timer display
     timerCnt.style.width = "100%";
-    timerCntTxt.innerHTML = (gameTimerMax / gameTimerInterval).toString() + " Seconds";
+    timerCntTxt.textContent = (gameTimerMax / gameTimerInterval).toString() + " Seconds";
 
     // Increase next word count
     solvedWords++;
@@ -332,7 +339,7 @@ function SetEvents()
 
 function SetWordOfWord()
 {
-    wordOfWord.innerHTML = `WORD ${solvedWords} OF ${maxWords}`;
+    wordOfWord.textContent = `WORD ${solvedWords} OF ${maxWords}`;
 }
 
 /*
@@ -354,7 +361,7 @@ function SolutionTile_Click(tile)
     {
         ResetTileMatchStyle();
         ResetTile(tile);
-        msgCnt.innerHTML = "";      
+        msgCnt.textContent = "";      
     }
 }
 
@@ -393,7 +400,7 @@ function JumbleTile_KeyPress(value)
     for(let i = 0; i < jumbleTiles.length; i++)
     {
         let tile = jumbleTiles[i];
-        if(tile.innerHTML.toLowerCase() == value)
+        if(tile.textContent.toLowerCase() == value)
         {
             foundTile = tile;
             break;
@@ -536,7 +543,7 @@ function WriteAttempts()
     aList.innerHTML = `<span class="${aClass}">${aMatch}  ${lastAttempt.word.toUpperCase()}</span><br/>` + aList.innerHTML;
 
     // set msg text under solution for color impaired players
-    msgCnt.innerHTML = (lastAttempt.match == true ? "MATCH!" : "NO MATCH!");
+    msgCnt.textContent = (lastAttempt.match == true ? "MATCH!" : "NO MATCH!");
 }
 
 function PrintWord(word)
@@ -558,7 +565,7 @@ function PrintWord(word)
     {
         tile = document.createElement("div");
         tile.classList.add("letters", "no_drop_allow");
-        tile.innerHTML = jumble.charAt(i);
+        tile.textContent = jumble.charAt(i);
         tile.draggable = true;
         tile.id = `letter_${i}`;
         jumbledCnt.appendChild(tile);
@@ -735,12 +742,12 @@ function RestartGame()
 function ShowTitleOverlay()
 {
 
-    document.getElementById("pointsCorrect").innerHTML = points_Correct;
-    document.getElementById("pointsIncorrect").innerHTML = points_Incorrect * -1;
-    document.getElementById("pointsBonus").innerHTML = points_Bonus;
-    document.getElementById("timerSeconds").innerHTML = gameTimerMax / 1000;
-    document.getElementById("bonusSeconds").innerHTML = (gameTimerInterval * gameTimeBonusTicks) / gameTimerInterval;
-    document.getElementById("bonusSecondsMax").innerHTML = gameTimerMax / gameTimerInterval;
+    document.getElementById("pointsCorrect").textContent = points_Correct;
+    document.getElementById("pointsIncorrect").textContent = points_Incorrect * -1;
+    document.getElementById("pointsBonus").textContent = points_Bonus;
+    document.getElementById("timerSeconds").textContent = gameTimerMax / 1000;
+    document.getElementById("bonusSeconds").textContent = (gameTimerInterval * gameTimeBonusTicks) / gameTimerInterval;
+    document.getElementById("bonusSecondsMax").textContent = gameTimerMax / gameTimerInterval;
 
     overlayCnt.classList.remove("hidden");
 }

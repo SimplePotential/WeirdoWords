@@ -20,14 +20,14 @@
 	<body onload="Init()">
         <div id="gameHolder" class="game">
             <div id="gameTitle">Weirdo Words</div>
-            <div id="jumbled" class="jumble">
+            <div id="jumbled" class="jumble" role="region" aria-label="Jumbled letters">
 
             </div>
-            <div id="solutions">
+            <div id="solutions" role="region" aria-label="Solution tiles">
             </div>
-            <div id="msg">
+            <div id="msg" aria-live="polite" aria-atomic="true">
             </div>
-            <div id="timerHolder">
+            <div id="timerHolder" role="progressbar" aria-label="Time remaining" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100">
                 <div id="timerbarTxt"></div>
                 <div id="timerbar"></div>                
             </div>
@@ -43,13 +43,13 @@
             </div>
             <div id="word_of_word"></div>
             <div id="help">
-                <div class="material-icons icons" id="btnRestart" title="Restart Game" onclick="RestartGame()">refresh</div>
+                <div class="material-icons icons" id="btnRestart" title="Restart Game" aria-label="Restart Game" role="button" tabindex="0" onclick="RestartGame()" onkeydown="if(event.key==='Enter'||event.key===' ')RestartGame()">refresh</div>
             </div>
             <div id="footer" class="footer">
-                <a href="https://www.simplepotential.com" target="_blank">&copy; Simple Potential</a> | 
-                <a href="https://github.com/SimplePotential/WeirdoWords" target="_blank">GitHub Source</a> | 
-                <a href="https://ldjam.com/events/ludum-dare/51/weirdo-words" target="_blank">Ludum Dare Entry</a> | 
-                <a href="https://github.com/SimplePotential/spDialog" target="_blank">spDialog</a>
+                <a href="https://www.simplepotential.com" target="_blank" rel="noopener noreferrer">&copy; Simple Potential</a> | 
+                <a href="https://github.com/SimplePotential/WeirdoWords" target="_blank" rel="noopener noreferrer">GitHub Source</a> | 
+                <a href="https://ldjam.com/events/ludum-dare/51/weirdo-words" target="_blank" rel="noopener noreferrer">Ludum Dare Entry</a> | 
+                <a href="https://github.com/SimplePotential/spDialog" target="_blank" rel="noopener noreferrer">spDialog</a>
             </div>
             <div id="overlay" class="hidden">
                 <div id="overlay_main">
@@ -74,8 +74,8 @@
                     </div>
 
                     <div id="overlay_main_menu">
-                        <button onclick="StartGame()">Timed Daily</button>
-                        <button disabled>Infinite Play</button>
+                        <button onclick="StartGame()" aria-label="Start Timed Daily game">Timed Daily</button>
+                        <button disabled aria-disabled="true" aria-label="Infinite Play mode (not yet available)">Infinite Play</button>
                     </div>
 
                     <div id="overlay_main_volume">

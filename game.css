@@ -412,6 +412,35 @@ div.footer a:hover
     text-decoration: underline;
 }
 
+/* Focus states for accessibility */
+:focus-visible
+{
+    outline: 3px solid #3c72c9;
+    outline-offset: 2px;
+}
+
+div.letters:focus,
+div.letters:focus-visible
+{
+    outline: 3px solid #3c72c9;
+    outline-offset: 2px;
+}
+
+div.icons:focus,
+div.icons:focus-visible
+{
+    outline: 3px solid #3c72c9;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+button:focus,
+button:focus-visible
+{
+    outline: 3px solid #ffffff;
+    outline-offset: 2px;
+}
+
 #overlay::-webkit-scrollbar
 {
     width: 6px;
