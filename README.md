@@ -15,3 +15,15 @@ This project is currently in a stable state, with a major update planned in the 
 * **Planned Endless Mode:** Where the player will get a randomly generated list of words that they can play indefinately.
 * **Planned Easy & Hard Mode:** Still defining how modes will work but likely to have timed and untimed mode.  Limited attempts are also possible.
 * **Planned Enhancements:** More features planned but nothing to announce yet.
+
+## LICENSE
+
+Creative Commons Attribution-NonCommercial 4.0 International Public License
+
+Copyright (c) 2026 [Kasey Sheffler]
+
+[![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
+
+## CONTACT
+
+Questions?  Contact admin@SimplePotential.com.
