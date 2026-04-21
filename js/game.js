@@ -35,7 +35,7 @@ let picked = new Array();
 let showCorrectPos = true;  // Maybe a hard mode that doesn't show you correctly placed letters/
 let gameTimer = null;
 let gameTimerTicks = 0;
-let gameTimerMax = 10000; // Milliseconds
+let gameTimerMax = 15000; // Milliseconds
 let gameTimerInterval = 1000;
 let gameTimeBonusTicks = 2;
 let isGameOver = false;
@@ -126,7 +126,9 @@ function CheckTimer()
     if(gameTimerTicks >= 0)
     {
         // Update timer display
-        timerCnt.style.width = (10 * (gameTimerTicks/gameTimerInterval)).toString() + "%";
+        let timerPercent = (gameTimerTicks / gameTimerMax) * 100;
+        timerPercent = Math.max(0, Math.min(100, timerPercent));
+        timerCnt.style.width = timerPercent.toString() + "%";
         timerCntTxt.innerHTML = (gameTimerTicks/gameTimerInterval).toString() + " Seconds";
 
         // Reduce timer
@@ -736,6 +738,7 @@ function ShowTitleOverlay()
     document.getElementById("pointsCorrect").innerHTML = points_Correct;
     document.getElementById("pointsIncorrect").innerHTML = points_Incorrect * -1;
     document.getElementById("pointsBonus").innerHTML = points_Bonus;
+    document.getElementById("timerSeconds").innerHTML = gameTimerMax / 1000;
     document.getElementById("bonusSeconds").innerHTML = (gameTimerInterval * gameTimeBonusTicks) / gameTimerInterval;
     document.getElementById("bonusSecondsMax").innerHTML = gameTimerMax / gameTimerInterval;
 
