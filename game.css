@@ -149,7 +149,7 @@ button.game-controls-button
     color: var(--button-text-color);
 }
 
-div.jumble
+.jumble
 {
     display: flex;
     flex-wrap: nowrap;
@@ -311,12 +311,29 @@ button
 
 #timerbar
 {
-    position: absolute; 
-    top: 0; 
-    width: 100%; 
-    height: 100%; 
-    background-color: #3c72c9; 
-    opacity: .5;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    border: none;
+    background-color: transparent;
+}
+
+#timerbar::-webkit-progress-bar
+{
+    background-color: transparent;
+}
+
+#timerbar::-webkit-progress-value
+{
+    background-color: rgba(60, 114, 201, 0.5);
+}
+
+#timerbar::-moz-progress-bar
+{
+    background-color: rgba(60, 114, 201, 0.5);
 }
 
 #scoreHolder
@@ -358,7 +375,7 @@ button
     user-select: none;          /* Likely future */
 }
 
-div.icons
+div.icons, button.icons
 {
     font-size: 2.5rem;
     cursor: pointer;
@@ -366,12 +383,21 @@ div.icons
     text-shadow: 2px 2px 2px rgba(155, 155, 155, 0.65);
 }
 
+button.icons
+{
+    background: none;
+    border: none;
+    padding: 0;
+    color: inherit;
+    line-height: inherit;
+}
+
 div.icons_disabled
 {
     color: rgba(100, 100, 100, 0.65);
 }
 
-div.icons:hover
+div.icons:hover, button.icons:hover
 {
     text-shadow: 2px 2px 2px var(--icons-hover);
     -webkit-transform: rotateZ(-20deg);
@@ -427,7 +453,9 @@ div.letters:focus-visible
 }
 
 div.icons:focus,
-div.icons:focus-visible
+div.icons:focus-visible,
+button.icons:focus,
+button.icons:focus-visible
 {
     outline: 3px solid #3c72c9;
     outline-offset: 2px;
@@ -461,6 +489,21 @@ button:focus-visible
 #overlay::-webkit-scrollbar-thumb:hover
 {
     background-color: var(--game-border-dark-active);
+}
+
+#overlay_main_title
+{
+    width: 100%;
+    text-align: center;
+    font-family: Atma;
+    font-size: 2rem;
+    text-shadow: 2px 2px 4px var(--game-border);
+}
+
+#overlay_main_desc,
+#overlay_main_notice
+{
+    text-align: center;
 }
 
 #overlay_main_rules

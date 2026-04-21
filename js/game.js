@@ -135,7 +135,7 @@ function CheckTimer()
         // Update timer display
         let timerPercent = (gameTimerTicks / gameTimerMax) * 100;
         timerPercent = Math.max(0, Math.min(100, timerPercent));
-        timerCnt.style.width = timerPercent.toString() + "%";
+        timerCnt.value = timerPercent;
         timerCntTxt.textContent = (gameTimerTicks/gameTimerInterval).toString() + " Seconds";
 
         // Reduce timer
@@ -176,7 +176,7 @@ function DoNextWordCheck()
     gameTimerTicks = gameTimerMax;
 
     // Update timer display
-    timerCnt.style.width = "100%";
+    timerCnt.value = 100;
     timerCntTxt.textContent = (gameTimerMax / gameTimerInterval).toString() + " Seconds";
 
     // Increase next word count
@@ -320,7 +320,7 @@ function SetEvents()
         });
     });
 
-    let jumbleTiles = jumbledCnt.querySelectorAll("div > .letters");
+    let jumbleTiles = jumbledCnt.querySelectorAll(":scope > .letters");
     jumbleTiles.forEach(e => {
         e.addEventListener("click", function(e){
             JumbleTile_Click(this);
@@ -394,7 +394,7 @@ function JumbleTile_KeyPress(value)
     if(isGameOver){ return false; }
 
     // Search if the letter passed exists in the jumble list
-    let jumbleTiles = jumbledCnt.querySelectorAll("div > .letters");
+    let jumbleTiles = jumbledCnt.querySelectorAll(":scope > .letters");
     let foundTile = null;
 
     for(let i = 0; i < jumbleTiles.length; i++)

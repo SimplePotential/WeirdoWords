@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
 		<title>Weirdo Words - A Word Jumble Game</title>
-        <link href='https://fonts.googleapis.com/css?family=Atma' rel='stylesheet'>
+        <link href="https://fonts.googleapis.com/css?family=Atma" rel="stylesheet">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-        <link rel="stylesheet" href="game.css"/>
+        <link rel="stylesheet" href="game.css">
 		<script src="js/words_easy.js"></script>
         <script src="js/spDialog.min.js"></script>
         <script src="js/game.js" defer></script>
@@ -20,20 +20,20 @@
 	<body onload="Init()">
         <div id="gameHolder" class="game">
             <div id="gameTitle">Weirdo Words</div>
-            <div id="jumbled" class="jumble" role="region" aria-label="Jumbled letters">
+            <section id="jumbled" class="jumble" aria-label="Jumbled letters">
 
-            </div>
-            <div id="solutions" role="region" aria-label="Solution tiles">
-            </div>
+            </section>
+            <section id="solutions" aria-label="Solution tiles">
+            </section>
             <div id="msg" aria-live="polite" aria-atomic="true">
             </div>
-            <div id="timerHolder" role="progressbar" aria-label="Time remaining" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100">
+            <div id="timerHolder">
                 <div id="timerbarTxt"></div>
-                <div id="timerbar"></div>                
+                <progress id="timerbar" aria-label="Time remaining" value="100" max="100"></progress>
             </div>
             <div id="summary" class="summary">
                 <div id="attempts" class="summary-child">
-                     
+
                 </div>
                 <div id="controls" class="summary-child">
                     <div id="scoreHolder">
@@ -43,18 +43,18 @@
             </div>
             <div id="word_of_word"></div>
             <div id="help">
-                <div class="material-icons icons" id="btnRestart" title="Restart Game" aria-label="Restart Game" role="button" tabindex="0" onclick="RestartGame()" onkeydown="if(event.key==='Enter'||event.key===' ')RestartGame()">refresh</div>
+                <button class="material-icons icons" id="btnRestart" title="Restart Game" aria-label="Restart Game" type="button" onclick="RestartGame()">refresh</button>
             </div>
             <div id="footer" class="footer">
-                <a href="https://www.simplepotential.com" target="_blank" rel="noopener noreferrer">&copy; Simple Potential</a> | 
-                <a href="https://github.com/SimplePotential/WeirdoWords" target="_blank" rel="noopener noreferrer">GitHub Source</a> | 
-                <a href="https://ldjam.com/events/ludum-dare/51/weirdo-words" target="_blank" rel="noopener noreferrer">Ludum Dare Entry</a> | 
+                <a href="https://www.simplepotential.com" target="_blank" rel="noopener noreferrer">&copy; Simple Potential</a> |
+                <a href="https://github.com/SimplePotential/WeirdoWords" target="_blank" rel="noopener noreferrer">GitHub Source</a> |
+                <a href="https://ldjam.com/events/ludum-dare/51/weirdo-words" target="_blank" rel="noopener noreferrer">Ludum Dare Entry</a> |
                 <a href="https://github.com/SimplePotential/spDialog" target="_blank" rel="noopener noreferrer">spDialog</a>
             </div>
             <div id="overlay" class="hidden">
                 <div id="overlay_main">
-                    <div style='width: 100%; text-align: center; font-family: Atma; font-size: 2rem; text-shadow: 2px 2px 4px var(--game-border);'>WEIRDO WORDS</div>
-                    <div style="text-align: center;">
+                    <div id="overlay_main_title">WEIRDO WORDS</div>
+                    <div id="overlay_main_desc">
                         This is a Ludum Dare 51 Entry.  A post competition version of game is planned.
                     </div>
                     <div id="overlay_main_rules">
@@ -74,21 +74,21 @@
                     </div>
 
                     <div id="overlay_main_menu">
-                        <button onclick="StartGame()" aria-label="Start Timed Daily game">Timed Daily</button>
-                        <button disabled aria-disabled="true" aria-label="Infinite Play mode (not yet available)">Infinite Play</button>
+                        <button type="button" onclick="StartGame()" aria-label="Start Timed Daily game">Timed Daily</button>
+                        <button type="button" disabled aria-disabled="true" aria-label="Infinite Play mode (not yet available)">Infinite Play</button>
                     </div>
 
                     <div id="overlay_main_volume">
-                        <label for="volume">Volume</label><br/>
-                        <input type="range" id="volume" min="0" max="1" value=".5" step="0.01" onchange="ChangeVolume()" />
+                        <label for="volume">Volume</label><br>
+                        <input type="range" id="volume" min="0" max="1" value=".5" step="0.01" onchange="ChangeVolume()">
                     </div>
 
-                    <div style="text-align: center;">
+                    <div id="overlay_main_notice">
                         Timed Daily is the only mode available for Ludum Dare.
                     </div>
                 </div>
             </div>
         </div>
-        
+
     </body>
 </html>
