@@ -27,3 +27,20 @@ Copyright (c) 2026 [Kasey Sheffler]
 ## CONTACT
 
 Questions?  Contact admin@SimplePotential.com.
+
+## Project Review Suggestions
+
+1. **Improve link security in `game.htm`**  
+   External links currently use `target="_blank"` without `rel="noopener noreferrer"`. Adding that `rel` helps prevent tab-nabbing.
+
+2. **Add a lightweight automated check step**  
+   Since this is a plain HTML/CSS/JS project, adding a small CI workflow (for example, HTML/JS syntax validation) would help catch accidental regressions early.
+
+3. **Increase accessibility support**  
+   Add keyboard-focus states and ARIA labels to key controls so gameplay and navigation are clearer for assistive technology and keyboard-only users.
+
+4. **Reduce `innerHTML` usage where possible**  
+   Prefer `textContent` when inserting plain text (for score/messages/labels). This reduces XSS risk if content sources change in the future.
+
+5. **Document game balancing constants**  
+   Values like timer limits and scoring are currently hard-coded in `js/game.js`. Moving these to a small config section with comments would make balancing easier.
