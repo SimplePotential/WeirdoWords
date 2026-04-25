@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 		<title>Weirdo Words - A Word Jumble Game</title>
-        <link href="https://fonts.googleapis.com/css?family=Atma" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel="stylesheet" href="game.css">
 		<script src="js/words_easy.js"></script>
@@ -18,17 +18,21 @@
 	</head>
 	<body onload="Init()">
         <div id="gameHolder" class="game">
-            <div id="gameTitle">Weirdo Words</div>
+            <div class="game-header">
+                <div id="gameTitle">Weirdo Words</div>
+                <div id="word_of_word"></div>
+            </div>
+            <div id="timerHolder">
+                <div id="timerbarTxt"></div>
+                <progress id="timerbar" aria-label="Time remaining" value="100" max="100"></progress>
+            </div>
+            <div class="game-body">
             <section id="jumbled" class="jumble" aria-label="Jumbled letters">
 
             </section>
             <section id="solutions" aria-label="Solution tiles">
             </section>
             <div id="msg" aria-live="polite" aria-atomic="true">
-            </div>
-            <div id="timerHolder">
-                <div id="timerbarTxt"></div>
-                <progress id="timerbar" aria-label="Time remaining" value="100" max="100"></progress>
             </div>
             <div id="summary" class="summary">
                 <div id="attempts" class="summary-child">
@@ -40,7 +44,6 @@
                     </div>
                 </div>
             </div>
-            <div id="word_of_word"></div>
             <div id="help">
                 <button class="material-icons icons" id="btnRestart" title="Restart Game" aria-label="Restart Game" type="button" onclick="RestartGame()">refresh</button>
             </div>
@@ -49,6 +52,7 @@
                 <a href="https://github.com/SimplePotential/WeirdoWords" target="_blank" rel="noopener noreferrer">GitHub Source</a> |
                 <a href="https://ldjam.com/events/ludum-dare/51/weirdo-words" target="_blank" rel="noopener noreferrer">Ludum Dare Entry</a> |
                 <a href="https://github.com/SimplePotential/spDialog" target="_blank" rel="noopener noreferrer">spDialog</a>
+            </div>
             </div>
             <div id="overlay" class="hidden">
                 <div id="overlay_main">
