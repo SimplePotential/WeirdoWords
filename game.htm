@@ -6,7 +6,6 @@
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel="stylesheet" href="game.css">
 		<script src="js/words_easy.js"></script>
-        <script src="js/spDialog.min.js"></script>
         <script src="js/game.js" defer></script>
         <!--
             NOTE: spDialog is available free to use to all with full source code available on my GitHub at:
@@ -85,6 +84,17 @@
 
                     <div id="overlay_main_notice">
                         Timed Daily is the only mode available for Ludum Dare.
+                    </div>
+                </div>
+            </div>
+            <div id="gameOverOverlay" class="hidden">
+                <div id="gameOverCard">
+                    <div id="gameOverTitle">Game Over</div>
+                    <div id="gameOverBody">
+                    </div>
+                    <div id="gameOverButtons">
+                        <button id="gameOverPlayAgain" type="button">Play Again</button>
+                        <button id="gameOverClose" type="button">Close</button>
                     </div>
                 </div>
             </div>

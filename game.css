@@ -665,3 +665,126 @@ button:focus-visible
         padding: 1.55rem;
     }
 }
+
+/* Game Over Overlay Styles */
+#gameOverOverlay
+{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#gameOverOverlay.hidden
+{
+    display: none;
+}
+
+#gameOverCard
+{
+    background-color: var(--game-background);
+    border: 2px solid var(--game-border-dark);
+    border-radius: 1rem;
+    padding: 2rem;
+    width: 25%;
+    max-width: 95%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    animation: slideIn 0.3s ease-out;
+}
+
+#gameOverTitle
+{
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+    color: var(--game-text);
+}
+
+#gameOverBody
+{
+    text-align: center;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+#gameOverBody b
+{
+    display: block;
+    margin-top: 1rem;
+    font-weight: bold;
+}
+
+#gameOverBody span
+{
+    color: #29b000;
+    font-weight: bold;
+    font-size: 1.5rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+#gameOverButtons
+{
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+#gameOverButtons button
+{
+    background-color: #0078d0;
+    border: 0;
+    border-radius: 0.5rem;
+    color: #ffffff;
+    cursor: pointer;
+    font-family: "Lucida Console", Courier, monospace;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    text-align: center;
+    transition: all 0.3s;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+#gameOverButtons button:hover
+{
+    background-color: #005a9e;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+#gameOverButtons button:active
+{
+    transform: translateY(0);
+}
+
+#gameOverButtons button:focus-visible
+{
+    outline: 3px solid #ffffff;
+    outline-offset: 2px;
+}
+
+@keyframes slideIn
+{
+    from
+    {
+        opacity: 0;
+        transform: translateY(-2rem);
+    }
+    to
+    {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

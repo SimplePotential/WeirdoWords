@@ -52,7 +52,6 @@ let isGameOver = false;
 let volLevel = .5;
 
 let dlgConsent = null;
-let dlgGameOver = null;
 let dlgResetGame = null;
 
 let score = 0;
@@ -665,50 +664,40 @@ function CreateGameOver()
     
     // TODO: Graph showing by word number of attempts
 
-    txtBody = "<div style=\"text-align: center; margin-top: 1rem;\">";
+    txtBody = "<b>Score</b><br/>";
+    txtBody += "<span>" + score + "</span>";
 
-        txtBody += "<b>Score</b><br/>";
-        txtBody += "<span style=\"color: #29b000; font-weight: bold; font-size: 1.5rem;\">" + score + "</span><br/><br/>";
+    txtBody += "<b>Average Guesses</b><br/>";
+    txtBody += "<span>" + stats[0].avg + "</span>";
 
-        txtBody += "<b>Average Guesses</b><br/>";
-        txtBody += "<span style=\"color: #29b000; font-weight: bold; font-size: 1.5rem;\">" + stats[0].avg + "</span><br/><br/>";
+    txtBody += "<b>Total Guesses</b><br/>";
+    txtBody += "<span>" + stats[0].tot + "</span>";
 
-        txtBody += "<b>Total Guesses</b><br/>";
-        txtBody += "<span style=\"color: #29b000; font-weight: bold; font-size: 1.5rem;\">" + stats[0].tot + "</span><br/><br/>";
+    txtBody += "<br/><div style=\"font-size: 0.9rem; margin-top: 1rem;\">Feel free to play again however the word selection will be the same until approximately Midnight local time.</div>";
 
-        txtBody += "<br/>Feel free to play again however the word selection will be the same until approximately Midnight local time."
-
-    txtBody += "</div>";
-
-    let params = {
-        textTitle: "Game Over",
-        textBody: txtBody,
-        dialogFontSize: "1rem",
-        dialogWidth: "25%",
-        dialogHeight: "45%",
-        showAnswerCancel: false,
-        showAnswerFalse: true,
-        textAnswerTrue: "Play Again",
-        textAnswerFalse: "Close"
-    }
-
-    dlgGameOver = new spDialog(params);
-    dlgGameOver.dialogTitle.style.height = "7%";
-    dlgGameOver.dialogBody.style.height = "73%";
-    dlgGameOver.answerTrue.style.fontSize = "1.25rem";
-    dlgGameOver.answerFalse.style.fontSize = "1.25rem";
-    dlgGameOver.dialogTitle.style.fontSize = "1.25rem";
+    document.getElementById("gameOverBody").innerHTML = txtBody;
 }
 
-async function ShowGameOver()
+function ShowGameOver()
 {
     sound_gameover.play();
-    await dlgGameOver.ShowDialog().then(result => {
-        if(dlgGameOver.userResponse == 1)
-        {
-            setTimeout(()=>{RestartGame()}, 500); // Give the dialog a chance to close to avoid weird flashing.
-        }
-    });
+
+    let gameOverOverlay = document.getElementById("gameOverOverlay");
+    let playAgainBtn = document.getElementById("gameOverPlayAgain");
+    let closeBtn = document.getElementById("gameOverClose");
+
+    // Show the overlay
+    gameOverOverlay.classList.remove("hidden");
+
+    // Set up button listeners
+    playAgainBtn.onclick = function() {
+        gameOverOverlay.classList.add("hidden");
+        setTimeout(() => { RestartGame(); }, 300); // Give the overlay time to fade out
+    };
+
+    closeBtn.onclick = function() {
+        gameOverOverlay.classList.add("hidden");
+    };
 }
 
 function AnalyzeAttempts()
