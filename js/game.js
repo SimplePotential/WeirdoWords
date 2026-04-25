@@ -104,7 +104,7 @@ function StartGame()
 {
     if(!overlayCnt.classList.contains("hidden"))
     {
-        overlay.classList.add("hidden");
+        overlayCnt.classList.add("hidden");
     }
 
     sound_correct.play();
