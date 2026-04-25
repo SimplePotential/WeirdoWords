@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weirdo Words – Design 2: Midnight Galaxy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* =====================================================
+           DESIGN 2 – MIDNIGHT GALAXY
+           Deep-space dark theme. Glassmorphism card.
+           Neon-glow tiles. Teal / purple / gold palette.
+           Elegant, mysterious, mobile-first.
+        ===================================================== */
+
+        :root {
+            --space-bg-1: #060614;
+            --space-bg-2: #0e0825;
+            --glass-bg: rgba(255,255,255,0.045);
+            --glass-border: rgba(180,120,255,0.25);
+            --glass-shadow: 0 8px 48px rgba(120,0,255,0.2), 0 2px 12px rgba(0,220,255,0.1);
+            --neon-purple: #a855f7;
+            --neon-teal: #06b6d4;
+            --neon-gold: #f59e0b;
+            --neon-pink: #ec4899;
+            --neon-green: #10b981;
+            --tile-glow-purple: 0 0 14px rgba(168,85,247,0.6);
+            --tile-glow-teal: 0 0 14px rgba(6,182,212,0.6);
+            --tile-glow-gold: 0 0 14px rgba(245,158,11,0.6);
+            --tile-glow-pink: 0 0 14px rgba(236,72,153,0.6);
+            --text-primary: #e5e0ff;
+            --text-muted: rgba(200,190,255,0.6);
+            --correct-green: #10b981;
+            --incorrect-red: #f43f5e;
+            --font-main: 'Space Grotesk', sans-serif;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body {
+            height: 100%;
+            font-family: var(--font-main);
+        }
+
+        /* Star field background */
+        body {
+            background: radial-gradient(ellipse at 20% 30%, #1a0a3a 0%, transparent 50%),
+                        radial-gradient(ellipse at 80% 70%, #001a2e 0%, transparent 50%),
+                        linear-gradient(160deg, var(--space-bg-1) 0%, var(--space-bg-2) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 1.5rem 1rem 3rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* CSS star field */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.7) 0%, transparent 100%),
+                radial-gradient(1px 1px at 20% 55%, rgba(255,255,255,0.5) 0%, transparent 100%),
+                radial-gradient(1.5px 1.5px at 35% 25%, rgba(255,255,255,0.8) 0%, transparent 100%),
+                radial-gradient(1px 1px at 42% 70%, rgba(255,255,255,0.4) 0%, transparent 100%),
+                radial-gradient(1px 1px at 55% 10%, rgba(255,255,255,0.6) 0%, transparent 100%),
+                radial-gradient(2px 2px at 60% 45%, rgba(168,85,247,0.7) 0%, transparent 100%),
+                radial-gradient(1px 1px at 70% 85%, rgba(255,255,255,0.5) 0%, transparent 100%),
+                radial-gradient(1.5px 1.5px at 78% 20%, rgba(6,182,212,0.6) 0%, transparent 100%),
+                radial-gradient(1px 1px at 85% 60%, rgba(255,255,255,0.7) 0%, transparent 100%),
+                radial-gradient(1px 1px at 92% 35%, rgba(245,158,11,0.5) 0%, transparent 100%),
+                radial-gradient(1px 1px at 5% 80%, rgba(255,255,255,0.4) 0%, transparent 100%),
+                radial-gradient(1px 1px at 48% 90%, rgba(255,255,255,0.6) 0%, transparent 100%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ── CARD ── */
+        .game {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1.5rem;
+            box-shadow: var(--glass-shadow);
+            width: 100%;
+            max-width: 480px;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+            color: var(--text-primary);
+        }
+
+        /* ── HEADER ── */
+        .game-header {
+            padding: 1.25rem 1.5rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(168,85,247,0.2);
+            position: relative;
+        }
+
+        #gameTitle {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            background: linear-gradient(90deg, var(--neon-purple) 0%, var(--neon-teal) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 12px rgba(168,85,247,0.5));
+        }
+
+        #word_of_word {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+        }
+
+        /* ── TIMER ── */
+        #timerHolder {
+            position: relative;
+            height: 1.25rem;
+            background: rgba(255,255,255,0.06);
+            border-bottom: 1px solid rgba(168,85,247,0.15);
+        }
+
+        #timerbarTxt {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%,-50%);
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--neon-teal);
+            z-index: 2;
+            letter-spacing: 0.05em;
+            text-shadow: 0 0 8px var(--neon-teal);
+        }
+
+        #timerbar {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            appearance: none;
+            -webkit-appearance: none;
+            border: none;
+            background: transparent;
+        }
+        #timerbar::-webkit-progress-bar { background: transparent; }
+        #timerbar::-webkit-progress-value {
+            background: linear-gradient(90deg, #4c1d95, #7c3aed, #06b6d4);
+            box-shadow: 0 0 8px rgba(124,58,237,0.5);
+            transition: width 0.25s linear;
+        }
+        #timerbar::-moz-progress-bar {
+            background: linear-gradient(90deg, #4c1d95, #7c3aed, #06b6d4);
+        }
+
+        /* ── GAME BODY ── */
+        .game-body {
+            padding: 0.75rem 1.25rem;
+        }
+
+        /* ── MESSAGE ── */
+        #msg {
+            text-align: center;
+            font-size: 0.95rem;
+            font-weight: 700;
+            min-height: 1.5rem;
+            color: var(--neon-gold);
+            text-shadow: 0 0 10px rgba(245,158,11,0.5);
+            padding: 0.2rem 0;
+            letter-spacing: 0.04em;
+        }
+
+        /* ── TILE AREAS ── */
+        .jumble, div.solution {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Source letter tiles */
+        div.letters {
+            width: 3.5rem;
+            height: 3.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            font-weight: 700;
+            border-radius: 0.6rem;
+            cursor: pointer;
+            transition: transform 0.12s ease, box-shadow 0.2s ease;
+            text-transform: uppercase;
+            border: 1px solid;
+        }
+
+        div.letters:nth-child(6n+1) {
+            background: rgba(168,85,247,0.15);
+            border-color: var(--neon-purple);
+            color: var(--neon-purple);
+            box-shadow: var(--tile-glow-purple);
+        }
+        div.letters:nth-child(6n+2) {
+            background: rgba(6,182,212,0.15);
+            border-color: var(--neon-teal);
+            color: var(--neon-teal);
+            box-shadow: var(--tile-glow-teal);
+        }
+        div.letters:nth-child(6n+3) {
+            background: rgba(245,158,11,0.15);
+            border-color: var(--neon-gold);
+            color: var(--neon-gold);
+            box-shadow: var(--tile-glow-gold);
+        }
+        div.letters:nth-child(6n+4) {
+            background: rgba(236,72,153,0.15);
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+            box-shadow: var(--tile-glow-pink);
+        }
+        div.letters:nth-child(6n+5) {
+            background: rgba(16,185,129,0.15);
+            border-color: var(--neon-green);
+            color: var(--neon-green);
+            box-shadow: 0 0 14px rgba(16,185,129,0.6);
+        }
+        div.letters:nth-child(6n+6) {
+            background: rgba(168,85,247,0.12);
+            border-color: var(--neon-teal);
+            color: #c4b5fd;
+            box-shadow: 0 0 14px rgba(196,181,253,0.4);
+        }
+
+        div.letters:hover {
+            transform: translateY(-3px) scale(1.1);
+            filter: brightness(1.3);
+        }
+
+        /* Empty solution slots */
+        div.empty_tile {
+            width: 3.5rem;
+            height: 3.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: rgba(255,255,255,0.04);
+            border: 1px dashed rgba(168,85,247,0.4);
+            border-radius: 0.6rem;
+        }
+
+        div.drag_enter { background-color: rgba(16,185,129,0.25); border-color: var(--neon-green); }
+        div.drag_fail  { background-color: rgba(244,63,94,0.25); border-color: var(--incorrect-red); }
+
+        div.matched { animation: matched 1.25s linear; border-color: var(--neon-green); color: var(--neon-green); }
+        div.nomatch { animation: shake .8s linear; border-color: var(--incorrect-red); color: var(--incorrect-red); }
+
+        /* ── SECTION DIVIDER ── */
+        .tile-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(168,85,247,0.3), rgba(6,182,212,0.3), transparent);
+            margin: 0.25rem 0;
+        }
+
+        /* ── SUMMARY ── */
+        div.summary {
+            display: flex;
+            gap: 0.6rem;
+            padding: 0.4rem 0;
+        }
+
+        div.summary-child {
+            flex: 1;
+            border: 1px solid rgba(168,85,247,0.2);
+            border-radius: 0.75rem;
+            background: rgba(168,85,247,0.05);
+            padding: 0.5rem;
+            min-height: 8rem;
+            max-height: 8rem;
+            overflow-y: auto;
+            font-size: 0.85rem;
+            line-height: 1.8;
+        }
+
+        div.summary-child::-webkit-scrollbar { width: 3px; }
+        div.summary-child::-webkit-scrollbar-thumb {
+            background: rgba(168,85,247,0.5);
+            border-radius: 4px;
+        }
+
+        /* ── SCORE ── */
+        #scoreHolder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #score {
+            font-size: 2.4rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--neon-gold), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 8px rgba(245,158,11,0.5));
+        }
+
+        span.attempt-matched { color: var(--neon-green); font-weight: 700; text-transform: capitalize; }
+        span.attempt-nomatch { color: var(--incorrect-red); font-weight: 600; text-transform: capitalize; }
+
+        /* ── CONTROLS ── */
+        #help {
+            border-top: 1px solid rgba(168,85,247,0.2);
+            text-align: center;
+            padding: 0.6rem 0;
+        }
+
+        button.icons {
+            background: none;
+            border: none;
+            font-size: 2.25rem;
+            cursor: pointer;
+            color: var(--neon-purple);
+            transition: transform 0.3s ease, filter 0.3s;
+            text-shadow: 0 0 12px rgba(168,85,247,0.7);
+            line-height: 1;
+            padding: 0.25rem;
+        }
+        button.icons:hover {
+            transform: rotateZ(-20deg);
+            filter: brightness(1.5) drop-shadow(0 0 8px var(--neon-teal));
+        }
+
+        /* ── FOOTER ── */
+        div.footer {
+            text-align: center;
+            font-size: 0.65rem;
+            padding: 0.5rem;
+            color: var(--text-muted);
+        }
+        div.footer a { color: var(--neon-teal); text-decoration: none; }
+        div.footer a:hover { text-shadow: 0 0 8px var(--neon-teal); }
+
+        /* ── OVERLAY ── */
+        #overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(6,1,20,0.92);
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            padding: 2rem 1.5rem;
+            overflow-y: auto;
+        }
+
+        #overlay_main_title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 0.1em;
+            background: linear-gradient(90deg, var(--neon-purple), var(--neon-teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 14px rgba(168,85,247,0.6));
+            margin-bottom: 0.5rem;
+        }
+
+        #overlay_main_desc, #overlay_main_notice {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        #overlay_main_rules {
+            border: 1px solid rgba(168,85,247,0.25);
+            border-radius: 0.75rem;
+            background: rgba(168,85,247,0.06);
+            padding: 0.75rem 1rem;
+            max-height: 38vh;
+            overflow-y: auto;
+            font-size: 0.82rem;
+            color: var(--text-primary);
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+
+        #overlay_main_menu {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            width: 80%;
+            margin: 0.75rem auto;
+        }
+
+        #overlay_main_menu button {
+            background: linear-gradient(135deg, rgba(124,58,237,0.8), rgba(6,182,212,0.6));
+            border: 1px solid rgba(168,85,247,0.5);
+            border-radius: 2rem;
+            color: #e5e0ff;
+            cursor: pointer;
+            font-family: var(--font-main);
+            font-size: 1rem;
+            font-weight: 700;
+            padding: 0.8rem 1.5rem;
+            text-align: center;
+            transition: box-shadow 0.2s, transform 0.2s;
+            box-shadow: 0 0 20px rgba(124,58,237,0.3);
+            letter-spacing: 0.04em;
+        }
+        #overlay_main_menu button:hover {
+            box-shadow: 0 0 30px rgba(124,58,237,0.55), 0 0 12px rgba(6,182,212,0.4);
+            transform: translateY(-2px);
+        }
+        #overlay_main_menu button:disabled {
+            background: rgba(80,80,120,0.3);
+            border-color: rgba(168,85,247,0.15);
+            color: rgba(200,190,255,0.4);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        #overlay_main_volume {
+            width: 70%;
+            margin: 0.75rem auto;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        input[type=range] {
+            width: 100%;
+            accent-color: var(--neon-purple);
+        }
+
+        /* ── GAME OVER ── */
+        #gameOverOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(6,1,20,0.75);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        #gameOverOverlay.hidden { display: none; }
+
+        #gameOverCard {
+            background: rgba(14,8,37,0.95);
+            border: 1px solid rgba(168,85,247,0.35);
+            border-radius: 1.25rem;
+            padding: 2rem;
+            width: 90%;
+            max-width: 360px;
+            box-shadow: 0 0 40px rgba(168,85,247,0.25), 0 0 16px rgba(6,182,212,0.15);
+            animation: slideIn 0.3s ease-out;
+            text-align: center;
+            color: var(--text-primary);
+        }
+
+        #gameOverTitle {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, var(--neon-purple), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        #gameOverBody {
+            font-size: 0.9rem;
+            max-height: 50vh;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+        }
+        #gameOverBody span {
+            color: var(--neon-green);
+            font-weight: 700;
+            font-size: 1.4rem;
+            display: block;
+            text-shadow: 0 0 10px rgba(16,185,129,0.5);
+        }
+
+        #gameOverButtons {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        #gameOverButtons button {
+            background: linear-gradient(135deg, rgba(124,58,237,0.7), rgba(6,182,212,0.5));
+            border: 1px solid rgba(168,85,247,0.4);
+            border-radius: 2rem;
+            color: #e5e0ff;
+            cursor: pointer;
+            font-family: var(--font-main);
+            font-size: 0.95rem;
+            font-weight: 700;
+            padding: 0.65rem 1.4rem;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+        #gameOverButtons button:hover {
+            box-shadow: 0 0 20px rgba(124,58,237,0.5);
+            transform: translateY(-2px);
+        }
+
+        /* ── ANIMATIONS ── */
+        @keyframes matched {
+            0%   { transform: rotate(0deg); }
+            50%  { transform: rotate(180deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes shake {
+            10%, 90% { transform: translate(-1px,0); }
+            20%, 80% { transform: translate(2px,0); }
+            30%, 50%, 70% { transform: translate(-4px,0); }
+            40%, 60% { transform: translate(4px,0); }
+        }
+        @keyframes slideIn {
+            from { opacity:0; transform: translateY(-1.5rem); }
+            to   { opacity:1; transform: translateY(0); }
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (min-width: 520px) {
+            .game { max-width: 520px; }
+            div.letters, div.empty_tile { width: 4rem; height: 4rem; font-size: 1.8rem; }
+        }
+        @media (min-width: 768px) {
+            body { padding: 2.5rem 1rem 3rem; }
+            .game { max-width: 44rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="gameHolder" class="game">
+        <!-- HEADER -->
+        <div class="game-header">
+            <div id="gameTitle">Weirdo Words</div>
+            <div id="word_of_word">Word 3 of 10</div>
+        </div>
+
+        <!-- TIMER -->
+        <div id="timerHolder">
+            <div id="timerbarTxt">9s</div>
+            <progress id="timerbar" value="60" max="100"></progress>
+        </div>
+
+        <!-- GAME BODY -->
+        <div class="game-body">
+            <div id="msg">✦ Keep going! ✦</div>
+
+            <div id="solutions" class="solution" aria-label="Solution tiles">
+                <div class="letters">P</div>
+                <div class="empty_tile"></div>
+                <div class="empty_tile"></div>
+                <div class="empty_tile"></div>
+            </div>
+
+            <div id="jumbled" class="jumble" aria-label="Jumbled letters">
+                <div class="letters">L</div>
+                <div class="letters">A</div>
+                <div class="letters">Y</div>
+            </div>
+
+            <div class="tile-divider"></div>
+
+            <div id="summary" class="summary">
+                <div id="attempts" class="summary-child">
+                    <span class="attempt-matched">✓ Dog</span><br>
+                    <span class="attempt-matched">✓ Cat</span><br>
+                    <span class="attempt-nomatch">✗ Bur</span>
+                </div>
+                <div id="controls" class="summary-child">
+                    <div id="scoreHolder">
+                        <div id="score">185</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="help">
+                <button class="icons" id="btnRestart" title="Restart Game" aria-label="Restart Game" type="button">↺</button>
+            </div>
+
+            <div id="footer" class="footer">
+                <a href="https://www.simplepotential.com" target="_blank" rel="noopener noreferrer">&copy; Simple Potential</a> |
+                <a href="https://github.com/SimplePotential/WeirdoWords" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
+        </div>
+
+        <!-- MAIN MENU OVERLAY -->
+        <div id="overlay">
+            <div id="overlay_main">
+                <div id="overlay_main_title">WEIRDO WORDS</div>
+                <div id="overlay_main_desc">A cosmic word jumble adventure</div>
+                <div id="overlay_main_rules">
+                    <ol>
+                        <li>You will be given a set of 10 semi-random words per day.</li>
+                        <li>You have 15 seconds to guess each word.</li>
+                        <li>Type the letters, drag/drop, or click tiles to place them.</li>
+                        <li>Backspace or click a placed letter to return it.</li>
+                        <li>Get 100 pts for correct, lose 20 pts for wrong.</li>
+                        <li>Earn 5 bonus pts for each second left on a correct guess.</li>
+                        <li>Underlined letters in a wrong guess are in the correct position.</li>
+                    </ol>
+                </div>
+                <div id="overlay_main_menu">
+                    <button type="button">Timed Daily</button>
+                    <button type="button" disabled>Infinite Play</button>
+                </div>
+                <div id="overlay_main_volume">
+                    <label for="volume">🔊 Volume</label><br>
+                    <input type="range" id="volume" min="0" max="1" value=".5" step="0.01">
+                </div>
+                <div id="overlay_main_notice">Timed Daily is the only mode available.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('overlay').addEventListener('click', function(e){
+            if(e.target.tagName === 'BUTTON') return;
+            this.style.display = this.style.display === 'none' ? '' : 'none';
+        });
+    </script>
+</body>
+</html>
