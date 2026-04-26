@@ -322,6 +322,7 @@ div.summary-child::-webkit-scrollbar-thumb {
 }
 
 span.attempt-matched { color: var(--neon-green); font-weight: 700; text-transform: capitalize; }
+span.attempt-valid { color: var(--neon-gold); font-weight: 700; text-transform: capitalize; }
 span.attempt-nomatch { color: var(--incorrect-red); font-weight: 600; text-transform: capitalize; }
 
 /* ── CONTROLS ── */

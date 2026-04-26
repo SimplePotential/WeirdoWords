@@ -1,6 +1,7 @@
 const wordList = wordList_Easy;
 const symMatch = "&checkmark;";
 const symNoMatch = "&cross;";
+const symValid = "&plus;";
 const symMissed = "-";
 
 // ============================================================
@@ -14,6 +15,7 @@ const gameTimeBonusTicks = 2;       // Extra ticks awarded for a partial correct
 const points_Correct = 100;         // Points for a correct word
 const points_Incorrect = -20;       // Points deducted for an incorrect guess
 const points_Bonus = 5;             // Bonus points per second remaining on correct answer
+const points_ValidNonTarget = 10;   // Points for a valid word that is not the current target
 const showCorrectPos = true;        // Underline correctly placed letters (set false for hard mode)
 // ============================================================
 
@@ -55,6 +57,8 @@ let dlgConsent = null;
 let dlgResetGame = null;
 
 let score = 0;
+let creditedValidWords = new Set();
+let validWordSet = new Set(wordList.map(e => e.toLowerCase()));
 
 let volSlider = null;
 let sound_place = null;
@@ -213,6 +217,9 @@ function SetNextWord()
 
     // Store words picked for later use
     picked.push(finWord);
+
+    // Reset per-round valid-word score tracking to prevent duplicate credit farming.
+    creditedValidWords = new Set();
     
     // Setup tiles for the word
     ResetWord();
@@ -441,6 +448,19 @@ function DropTile(target, source)
         UpdateScore(points_Incorrect);
         setTimeout(ResetWord, 1000);
     }
+    if(isMatch == 2)
+    {
+        let lastAttempt = attempts[attempts.length-1];
+        let validWord = (lastAttempt.word || "").toLowerCase();
+
+        if(validWord.length > 0 && !creditedValidWords.has(validWord))
+        {
+            creditedValidWords.add(validWord);
+            UpdateScore(points_ValidNonTarget);
+        }
+
+        setTimeout(ResetWord, 1000);
+    }
 }
 
 function ResetTileMatchStyle()
@@ -473,6 +493,7 @@ function ResetTile(source)
     Returns
         0 = Not all tiles placed yet
         1 = All tiles placed but incorrect positions
+        2 = All tiles placed and valid word, but not the active target word
         3 = All tiles placed and word matches
 */
 function MatchCheck()
@@ -494,6 +515,13 @@ function MatchCheck()
     // Does the word match?
     if(placedWord != finWord)
     {
+        let placedWord_Lower = placedWord.toLowerCase();
+        if(validWordSet.has(placedWord_Lower))
+        {
+            attempts.push({jumble: solvedWords, word: placedWord, match: false, validAlt: true});
+            return 2;
+        }
+
         let placedWord_Formatted = "";
 
         placedTiles.forEach( (e, i) =>
@@ -537,12 +565,13 @@ function WriteAttempts()
 {
     let aList = document.getElementById("attempts");
     let lastAttempt = attempts[attempts.length-1];
-    let aClass = (lastAttempt.match == true ? "attempt-matched" : "attempt-nomatch");
-    let aMatch = (lastAttempt.match == true ? symMatch : symNoMatch);
+    let isValidAlt = (lastAttempt.validAlt == true);
+    let aClass = (lastAttempt.match == true ? "attempt-matched" : (isValidAlt ? "attempt-valid" : "attempt-nomatch"));
+    let aMatch = (lastAttempt.match == true ? symMatch : (isValidAlt ? symValid : symNoMatch));
     aList.innerHTML = `<span class="${aClass}">${aMatch}  ${lastAttempt.word.toUpperCase()}</span><br/>` + aList.innerHTML;
 
     // set msg text under solution for color impaired players
-    msgCnt.textContent = (lastAttempt.match == true ? "MATCH!" : "NO MATCH!");
+    msgCnt.textContent = (lastAttempt.match == true ? "MATCH!" : (isValidAlt ? "VALID WORD, FIND THE TARGET!" : "NO MATCH!"));
 }
 
 function PrintWord(word)
