@@ -132,10 +132,10 @@ body::before {
     transform: translate(-50%,-50%);
     font-size: 0.75rem;
     font-weight: 700;
-    color: var(--neon-teal);
+    color: var(--text-primary);
     z-index: 2;
     letter-spacing: 0.05em;
-    text-shadow: 0 0 8px var(--neon-teal);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.85), 0 0 8px rgba(6,182,212,0.45);
 }
 
 #timerbar {
@@ -354,8 +354,21 @@ div.footer {
     padding: 0.5rem;
     color: var(--text-muted);
 }
-div.footer a { color: var(--neon-teal); text-decoration: none; }
-div.footer a:hover { text-shadow: 0 0 8px var(--neon-teal); }
+div.footer a {
+    color: var(--neon-teal);
+    text-decoration: none;
+    font-size: 1.2em;
+    font-weight: 600;
+    text-shadow: 0 0 6px rgba(6,182,212,0.7), 0 1px 2px rgba(0,0,0,0.65);
+    transition: color 0.2s ease, text-shadow 0.2s ease, filter 0.2s ease;
+}
+div.footer a:hover {
+    color: #67e8f9;
+    text-underline-offset: 0.14em;
+    text-decoration-thickness: 1px;
+    text-shadow: 0 0 10px rgba(6,182,212,0.9), 0 0 18px rgba(6,182,212,0.6), 0 1px 2px rgba(0,0,0,0.75);
+    filter: brightness(1.22);
+}
 
 /* ── OVERLAY ── */
 #overlay {
@@ -420,6 +433,14 @@ div.footer a:hover { text-shadow: 0 0 8px var(--neon-teal); }
 #overlay_main_rules ol {
     margin: 0;
     padding-left: 1.75rem;
+}
+
+#overlay_main_rules li {
+    margin-bottom: 0.4rem;
+}
+
+#overlay_main_rules li:last-child {
+    margin-bottom: 0;
 }
 
 #overlay_main_rules::-webkit-scrollbar {
@@ -622,6 +643,10 @@ input[type=range] {
         min-height: 0;
         max-height: min(50%, 50vh);
         line-height: 1.55;
+    }
+
+    #overlay_main_rules li {
+        margin-bottom: 0.3rem;
     }
 
     #overlay_main_menu {
