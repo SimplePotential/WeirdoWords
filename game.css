@@ -84,6 +84,7 @@ body::before {
     width: min(100%, var(--app-frame-max-width));
     max-width: var(--app-frame-max-width);
     height: calc(100vh - 2rem);
+    max-height: 85vh;
     overflow-x: hidden;
     overflow-y: auto;
     position: relative;
