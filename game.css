@@ -285,18 +285,80 @@ div.summary-child {
     border: 1px solid rgba(168,85,247,0.2);
     border-radius: 0.75rem;
     background: rgba(168,85,247,0.05);
-    padding: 0.5rem;
+    padding: 0.4rem;
     min-height: 8rem;
     max-height: 8rem;
     overflow-y: auto;
     font-size: 0.85rem;
     line-height: 1.8;
+    display: flex;
+    flex-direction: column;
 }
 
 div.summary-child::-webkit-scrollbar { width: 3px; }
 div.summary-child::-webkit-scrollbar-thumb {
     background: rgba(168,85,247,0.5);
     border-radius: 4px;
+}
+
+/* Attempt row container – card styling, status rail, alternating tint */
+.attempt-row {
+    padding: 0.4rem 0.5rem;
+    margin-bottom: 0.3rem;
+    border-left: 3px solid transparent;
+    border-radius: 0.3rem;
+    background: rgba(168,85,247,0.02);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
+/* Alternating row tint for visual separation */
+.attempt-row:nth-child(odd) {
+    background: rgba(168,85,247,0.05);
+}
+
+/* Status rail colors tied to match/valid/nomatch states */
+.attempt-row.attempt-matched {
+    border-left-color: var(--neon-green);
+}
+
+.attempt-row.attempt-valid {
+    border-left-color: var(--neon-gold);
+}
+
+.attempt-row.attempt-nomatch {
+    border-left-color: var(--incorrect-red);
+}
+
+/* Fade/slide animation for new entries */
+@keyframes attemptFadeSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.attempt-new {
+    animation: attemptFadeSlide 0.25s ease-out forwards;
+}
+
+/* Respect user's motion preference */
+@media (prefers-reduced-motion: reduce) {
+    .attempt-new {
+        animation: none;
+    }
+}
+
+/* Symbol alignment and spacing */
+.attempt-symbol {
+    display: inline-block;
+    min-width: 1.2em;
+    text-align: center;
 }
 
 #controls {
@@ -326,6 +388,11 @@ div.summary-child::-webkit-scrollbar-thumb {
 span.attempt-matched { color: var(--neon-green); font-weight: 700; text-transform: capitalize; }
 span.attempt-valid { color: var(--neon-gold); font-weight: 700; text-transform: capitalize; }
 span.attempt-nomatch { color: var(--incorrect-red); font-weight: 600; text-transform: capitalize; }
+
+.attempt-word {
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
 
 /* ── CONTROLS ── */
 #help {

@@ -617,7 +617,8 @@ function WriteAttempts()
     let isValidAlt = (lastAttempt.validAlt == true);
     let aClass = (lastAttempt.match == true ? "attempt-matched" : (isValidAlt ? "attempt-valid" : "attempt-nomatch"));
     let aMatch = (lastAttempt.match == true ? symMatch : (isValidAlt ? symValid : symNoMatch));
-    aList.innerHTML = `<span class="${aClass}">${aMatch}  ${lastAttempt.word.toUpperCase()}</span><br/>` + aList.innerHTML;
+    let rowHTML = `<div class="attempt-row attempt-${aClass} attempt-new"><span class="attempt-symbol ${aClass}">${aMatch}</span> <span class="attempt-word ${aClass}">${lastAttempt.word.toUpperCase()}</span></div>`;
+    aList.innerHTML = rowHTML + aList.innerHTML;
 
     // set msg text under solution for color impaired players
     msgCnt.textContent = (lastAttempt.match == true ? "MATCH!" : (isValidAlt ? "VALID WORD, FIND THE TARGET!" : "NO MATCH!"));
