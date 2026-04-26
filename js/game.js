@@ -17,6 +17,8 @@ const points_Incorrect = -20;       // Points deducted for an incorrect guess
 const points_Bonus = 5;             // Bonus points per second remaining on correct answer
 const points_ValidNonTarget = 10;   // Points for a valid word that is not the current target
 const showCorrectPos = true;        // Underline correctly placed letters (set false for hard mode)
+const tileMinSize = 28;             // Minimum tile size in px before wrapping is allowed
+const tileGapSize = 8;              // Fallback gap size in px for tile fit calculations
 // ============================================================
 
 const progression = [
@@ -52,6 +54,7 @@ let gameTimer = null;
 let gameTimerTicks = 0;
 let isGameOver = false;
 let volLevel = .5;
+let resizeTimer = null;
 
 let dlgConsent = null;
 let dlgResetGame = null;
@@ -99,6 +102,16 @@ function Init()
     volLevel = parseFloat(volSlider.value);
 
     SetupSounds();
+
+    window.addEventListener("resize", function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            if(finWord)
+            {
+                UpdateTileSize(finWord.length);
+            }
+        }, 100);
+    });
 
     ShowTitleOverlay();
 
@@ -227,6 +240,8 @@ function SetNextWord()
 
 function ResetWord()
 {
+    UpdateTileSize(finWord.length);
+
     // Show the word
     PrintWord(finWord);
 
@@ -238,6 +253,40 @@ function ResetWord()
 
     // Set word of word
     SetWordOfWord();
+}
+
+function UpdateTileSize(wordLength)
+{
+    if(!jumbledCnt || !wordLength || wordLength <= 0)
+    {
+        return;
+    }
+
+    // Reset to media-query defaults so each round starts from the intended base design.
+    document.documentElement.style.removeProperty("--tile-size");
+    document.documentElement.style.removeProperty("--tile-font-size");
+
+    const rootStyles = getComputedStyle(document.documentElement);
+    const baseFontPx = parseFloat(rootStyles.fontSize) || 16;
+    const naturalTileRem = parseFloat(rootStyles.getPropertyValue("--tile-size"));
+    const naturalFontRem = parseFloat(rootStyles.getPropertyValue("--tile-font-size"));
+    const naturalTilePx = naturalTileRem > 0 ? naturalTileRem * baseFontPx : 56;
+    const naturalFontPx = naturalFontRem > 0 ? naturalFontRem * baseFontPx : 25.6;
+    const fontRatio = naturalTilePx > 0 ? (naturalFontPx / naturalTilePx) : 0.457;
+
+    const containerWidth = jumbledCnt.getBoundingClientRect().width;
+    if(containerWidth <= 0)
+    {
+        return;
+    }
+
+    const gap = parseFloat(getComputedStyle(jumbledCnt).gap) || tileGapSize;
+    const fitTilePx = (containerWidth - (wordLength - 1) * gap) / wordLength;
+    const clampedTilePx = Math.max(tileMinSize, Math.min(naturalTilePx, fitTilePx));
+    const scaledFontPx = Math.max(12, clampedTilePx * fontRatio);
+
+    document.documentElement.style.setProperty("--tile-size", `${clampedTilePx}px`);
+    document.documentElement.style.setProperty("--tile-font-size", `${scaledFontPx}px`);
 }
 
 function SetEvents()
