@@ -297,6 +297,10 @@ div.summary-child::-webkit-scrollbar-thumb {
     border-radius: 4px;
 }
 
+#controls {
+    overflow: hidden;
+}
+
 /* ── SCORE ── */
 #scoreHolder {
     width: 100%;
@@ -306,6 +310,8 @@ div.summary-child::-webkit-scrollbar-thumb {
     justify-content: center;
 }
 #score {
+    width: 100%;
+    text-align: center;
     font-size: 2.4rem;
     font-weight: 700;
     background: linear-gradient(90deg, var(--neon-gold), var(--neon-pink));
@@ -409,6 +415,11 @@ div.footer a:hover { text-shadow: 0 0 8px var(--neon-teal); }
     margin-bottom: 0;
     scrollbar-width: thin;
     scrollbar-color: rgba(168,85,247,0.65) rgba(6,1,20,0.55);
+}
+
+#overlay_main_rules ol {
+    margin: 0;
+    padding-left: 1.75rem;
 }
 
 #overlay_main_rules::-webkit-scrollbar {
