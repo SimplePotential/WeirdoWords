@@ -812,6 +812,7 @@ function ShowTitleOverlay()
     document.getElementById("pointsCorrect").textContent = points_Correct;
     document.getElementById("pointsIncorrect").textContent = points_Incorrect * -1;
     document.getElementById("pointsBonus").textContent = points_Bonus;
+    document.getElementById("pointsValidNonTarget").textContent = points_ValidNonTarget;
     document.getElementById("timerSeconds").textContent = gameTimerMax / 1000;
     document.getElementById("bonusSeconds").textContent = (gameTimerInterval * gameTimeBonusTicks) / gameTimerInterval;
     document.getElementById("bonusSecondsMax").textContent = gameTimerMax / gameTimerInterval;
