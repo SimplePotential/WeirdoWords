@@ -397,7 +397,7 @@ span.attempt-nomatch { color: var(--incorrect-red); font-weight: 600; text-trans
 
 /* ── CONTROLS ── */
 #help {
-    border-top: 1px solid rgba(168,85,247,0.2);
+    /* border-top: 1px solid rgba(168,85,247,0.2); */
     text-align: center;
     padding: 0.6rem 0;
 }
