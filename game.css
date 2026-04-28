@@ -274,6 +274,25 @@ div.drag_fail  { background-color: rgba(244,63,94,0.25); border-color: var(--inc
 div.matched { animation: matched 1.25s linear; border-color: var(--neon-green); color: var(--neon-green); }
 div.nomatch { animation: shake .8s linear; border-color: var(--incorrect-red); color: var(--incorrect-red); }
 
+/* Hint-locked solution tiles: subtle visual cue that tile is fixed in place */
+.solution > div[data-hintplaced='1'] {
+    border: 1px solid transparent;
+    background:
+        linear-gradient(rgba(255,255,255,0.04), rgba(255,255,255,0.04)) padding-box,
+        linear-gradient(130deg,
+            rgba(245,158,11,0.28) 0%,
+            rgba(245,158,11,0.88) 35%,
+            rgba(251,191,36,0.92) 50%,
+            rgba(245,158,11,0.88) 65%,
+            rgba(245,158,11,0.28) 100%) border-box;
+    background-size: 100% 100%, 240% 240%;
+    background-position: 0 0, 0% 50%;
+    animation: hintBorderShimmer 2.4s linear infinite;
+    box-shadow: 0 0 0 1px rgba(245,158,11,0.35), inset 0 0 10px rgba(245,158,11,0.14);
+    filter: saturate(1.06);
+    color: #000000;
+}
+
 /* ── SECTION DIVIDER ── */
 .tile-divider {
     height: 1px;
@@ -829,6 +848,15 @@ input[type=range] {
     0%   { transform: rotate(0deg); }
     50%  { transform: rotate(180deg); }
     100% { transform: rotate(360deg); }
+}
+
+@keyframes hintBorderShimmer {
+    0% {
+        background-position: 0 0, 0% 50%;
+    }
+    100% {
+        background-position: 0 0, 220% 50%;
+    }
 }
 
 @media (max-width: 640px) {
