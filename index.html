@@ -50,6 +50,14 @@
                 <button class="material-icons icons icons-skip" id="btnSkip" title="Skip Word" aria-label="Skip Word" type="button" onclick="UseSkip()" style="display:none;">skip_next</button>
                 <button class="material-icons icons icons-end" id="btnEndRun" title="End Infinite Run" aria-label="End Infinite Run" type="button" onclick="EndRun()" style="display:none;">stop_circle</button>
             </div>
+            <div class="game-volume" aria-label="Volume control">
+                <div class="volumeWidget">
+                    <button class="material-icons volumeIcon" type="button" aria-label="Show volume slider">volume_up</button>
+                    <div class="volumeSlider">
+                        <input type="range" class="volInput" id="volume" min="0" max="1" value=".5" step="0.01" onchange="ChangeVolume(this)">
+                    </div>
+                </div>
+            </div>
             <div id="footer" class="footer">
                 <a href="https://www.simplepotential.com" target="_blank" rel="noopener noreferrer">&copy; Simple Potential</a> |
                 <a href="https://github.com/SimplePotential/WeirdoWords" target="_blank" rel="noopener noreferrer">GitHub Source</a>
@@ -69,8 +77,16 @@
                     </div>
 
                     <div id="overlay_main_volume">
-                        <label for="volume">Volume</label><br>
-                        <input type="range" id="volume" min="0" max="1" value=".5" step="0.01" onchange="ChangeVolume()">
+                        <div class="volumeWidget">
+                            <button class="material-icons volumeIcon" type="button" aria-label="Show volume slider">volume_up</button>
+                            <div class="volumeSlider">
+                                <input type="range" class="volInput" id="volumeOverlay" min="0" max="1" value=".5" step="0.01" onchange="ChangeVolume(this)">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer">
+                        <a href="https://www.simplepotential.com" target="_blank" rel="noopener noreferrer">&copy; Simple Potential</a> |
+                        <a href="https://github.com/SimplePotential/WeirdoWords" target="_blank" rel="noopener noreferrer">GitHub Source</a>
                     </div>
                 </div>
             </div>

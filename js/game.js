@@ -89,7 +89,7 @@ let infiniteRunCycle = 0;
 let hintUsesRemaining = 0;
 let pendingConfirmAction = null;
 
-let volSlider = null;
+let volSliders = [];
 let sound_place = null;
 let sound_gameover = null;
 let sound_wrong = null;
@@ -127,7 +127,7 @@ function Init()
     confirmYesBtn = document.getElementById("confirmYes");
     confirmNoBtn = document.getElementById("confirmNo");
 
-    volSlider = document.getElementById("volume");
+    volSliders = document.querySelectorAll(".volInput");
 
     // Get the score display holder
     scoreCnt = document.getElementById("score");
@@ -137,7 +137,10 @@ function Init()
 
     gameTimerTicks = gameTimerMax;
 
-    volLevel = parseFloat(volSlider.value);
+    if(volSliders.length > 0)
+    {
+        volLevel = parseFloat(volSliders[0].value);
+    }
 
     SetupSounds();
 
@@ -150,6 +153,23 @@ function Init()
             }
         });
     }
+
+    // Prevent speaker icon clicks and setup volume widget mouseleave to close slider
+    document.querySelectorAll(".volumeIcon").forEach(icon => {
+        icon.addEventListener("click", function(e) {
+            e.preventDefault();
+        });
+    });
+
+    document.querySelectorAll(".volumeWidget").forEach(widget => {
+        widget.addEventListener("mouseleave", function() {
+            const slider = widget.querySelector(".volInput");
+            if(slider)
+            {
+                slider.blur();
+            }
+        });
+    });
 
     window.addEventListener("resize", function() {
         clearTimeout(resizeTimer);
@@ -821,7 +841,14 @@ function MatchCheck()
         let placedWord_Lower = placedWord.toLowerCase();
         if(validWordSet.has(placedWord_Lower))
         {
-            attempts.push({jumble: solvedWords, word: placedWord, match: false, validAlt: true});
+            let placedWord_Formatted = "";
+
+            placedTiles.forEach((e, i) =>
+            {
+                placedWord_Formatted += (finWord.substr(i, 1).toLowerCase() == e.innerHTML.toLowerCase() && showCorrectPos ? `<u>${e.innerHTML}</u>` : e.innerHTML);
+            });
+
+            attempts.push({jumble: solvedWords, word: placedWord_Formatted, match: false, validAlt: true});
             return 2;
         }
 
@@ -1315,9 +1342,30 @@ function HideHowToPlayModal()
     howToPlayOverlayCnt.classList.add("hidden");
 }
 
-function ChangeVolume()
+function ChangeVolume(sender)
 {
-    volLevel = parseFloat(volSlider.value);
+    let sourceSlider = sender;
+
+    if(!sourceSlider && volSliders.length > 0)
+    {
+        sourceSlider = volSliders[0];
+    }
+
+    if(!sourceSlider)
+    {
+        return;
+    }
+
+    volLevel = parseFloat(sourceSlider.value);
+
+    volSliders.forEach(s =>
+    {
+        if(s !== sourceSlider)
+        {
+            s.value = sourceSlider.value;
+        }
+    });
+
     sound_gameover.play();
 }
 
