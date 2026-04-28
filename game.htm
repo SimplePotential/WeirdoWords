@@ -46,6 +46,8 @@
             </div>
             <div id="help">
                 <button class="material-icons icons" id="btnRestart" title="Restart Game" aria-label="Restart Game" type="button" onclick="RestartGame()">refresh</button>
+                <button class="material-icons icons icons-hint" id="btnHint" title="Use Hint" aria-label="Use Hint" type="button" onclick="UseHint()" style="display:none;">lightbulb</button>
+                <button class="material-icons icons icons-skip" id="btnSkip" title="Skip Word" aria-label="Skip Word" type="button" onclick="UseSkip()" style="display:none;">skip_next</button>
                 <button class="material-icons icons icons-end" id="btnEndRun" title="End Infinite Run" aria-label="End Infinite Run" type="button" onclick="EndRun()" style="display:none;">stop_circle</button>
             </div>
             <div id="footer" class="footer">
@@ -85,6 +87,16 @@
 
                     <div id="overlay_main_notice">
                         Timed Daily and Infinite Play are available now. More modes are planned for future updates.
+                    </div>
+                </div>
+            </div>
+            <div id="confirmOverlay" class="hidden">
+                <div id="confirmCard">
+                    <div id="confirmTitle">Confirm</div>
+                    <div id="confirmBody">Are you sure?</div>
+                    <div id="confirmButtons">
+                        <button id="confirmYes" type="button">Yes</button>
+                        <button id="confirmNo" type="button">No</button>
                     </div>
                 </div>
             </div>

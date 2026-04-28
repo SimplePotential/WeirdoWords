@@ -19,6 +19,8 @@ const points_Correct = 100;         // Points for a correct word
 const points_Incorrect = -20;       // Points deducted for an incorrect guess
 const points_Bonus = 5;             // Bonus points per second remaining on correct answer
 const points_ValidNonTarget = 10;   // Points for a valid word that is not the current target
+const points_HintCost = 20;         // Points deducted for each Hint use in Infinite mode
+const points_SkipCost = points_Correct; // Points deducted when skipping a word in Infinite mode
 const showCorrectPos = true;        // Underline correctly placed letters (set false for hard mode)
 const tileMinSize = 28;             // Minimum tile size in px before wrapping is allowed
 const tileGapSize = 8;              // Fallback gap size in px for tile fit calculations
@@ -51,7 +53,15 @@ let timerCntTxt;
 let timerHolderCnt;
 let scoreCnt;
 let overlayCnt;
+let restartBtn;
+let hintBtn;
+let skipBtn;
 let endRunBtn;
+let confirmOverlayCnt;
+let confirmTitleCnt;
+let confirmBodyCnt;
+let confirmYesBtn;
+let confirmNoBtn;
 
 let gameMode = GAME_MODE_TIMED;
 let solvedWords = 0;
@@ -75,6 +85,8 @@ let validWordSet = new Set(wordList.map(e => e.toLowerCase()));
 
 let infiniteRunSeedBase = 0;
 let infiniteRunCycle = 0;
+let hintUsesRemaining = 0;
+let pendingConfirmAction = null;
 
 let volSlider = null;
 let sound_place = null;
@@ -102,7 +114,16 @@ function Init()
     timerCntTxt = document.getElementById("timerbarTxt");
 
     overlayCnt = document.getElementById("overlay");
+    restartBtn = document.getElementById("btnRestart");
+    hintBtn = document.getElementById("btnHint");
+    skipBtn = document.getElementById("btnSkip");
     endRunBtn = document.getElementById("btnEndRun");
+
+    confirmOverlayCnt = document.getElementById("confirmOverlay");
+    confirmTitleCnt = document.getElementById("confirmTitle");
+    confirmBodyCnt = document.getElementById("confirmBody");
+    confirmYesBtn = document.getElementById("confirmYes");
+    confirmNoBtn = document.getElementById("confirmNo");
 
     volSlider = document.getElementById("volume");
 
@@ -179,6 +200,8 @@ function StartRun(mode)
         infiniteRunCycle = 0;
     }
 
+    hintUsesRemaining = 0;
+
     document.getElementById("attempts").innerHTML = "";
     msgCnt.textContent = "";
     SetModeUi();
@@ -197,10 +220,27 @@ function SetModeUi()
         timerHolderCnt.style.display = (IsTimedMode() ? "" : "none");
     }
 
+    if(restartBtn)
+    {
+        restartBtn.style.display = (IsInfiniteMode() ? "none" : "inline-flex");
+    }
+
+    if(hintBtn)
+    {
+        hintBtn.style.display = (IsInfiniteMode() ? "inline-flex" : "none");
+    }
+
+    if(skipBtn)
+    {
+        skipBtn.style.display = (IsInfiniteMode() ? "inline-flex" : "none");
+    }
+
     if(endRunBtn)
     {
         endRunBtn.style.display = (IsInfiniteMode() ? "inline-flex" : "none");
     }
+
+    UpdateHintButtonState();
 }
 
 function SetGameTimer()
@@ -380,6 +420,17 @@ function ResetWord()
 
     // Set word of word
     SetWordOfWord();
+
+    if(IsInfiniteMode())
+    {
+        hintUsesRemaining = Math.floor(finWord.length / 2);
+    }
+    else
+    {
+        hintUsesRemaining = 0;
+    }
+
+    UpdateHintButtonState();
 }
 
 function UpdateTileSize(wordLength)
@@ -972,7 +1023,7 @@ function ShowGameOver()
     // Set up button listeners
     playAgainBtn.onclick = function() {
         gameOverOverlay.classList.add("hidden");
-        setTimeout(() => { RestartGame(); }, 300); // Give the overlay time to fade out
+        setTimeout(() => { RestartGame(true); }, 300); // Give the overlay time to fade out
     };
 
     closeBtn.onclick = function() {
@@ -1008,23 +1059,154 @@ function UpdateScore(value)
     scoreCnt.innerHTML = `POINTS<br/>${score}`;
 }
 
-function RestartGame()
+function UpdateHintButtonState()
 {
-    // TODO: A true restart that allows you to play a new set of words
-    location.reload();
+    if(!hintBtn)
+    {
+        return;
+    }
+
+    if(!IsInfiniteMode())
+    {
+        hintBtn.disabled = true;
+        hintBtn.title = "Use Hint";
+        return;
+    }
+
+    hintBtn.disabled = isGameOver || hintUsesRemaining <= 0;
+    hintBtn.title = `Use Hint (${hintUsesRemaining} left)`;
 }
 
-function EndRun()
+function ShowConfirmModal(title, message, onConfirm)
+{
+    if(!confirmOverlayCnt || !confirmTitleCnt || !confirmBodyCnt || !confirmYesBtn || !confirmNoBtn)
+    {
+        return;
+    }
+
+    pendingConfirmAction = onConfirm;
+
+    confirmTitleCnt.textContent = title;
+    confirmBodyCnt.textContent = message;
+
+    confirmYesBtn.onclick = function() {
+        confirmOverlayCnt.classList.add("hidden");
+
+        if(typeof pendingConfirmAction === "function")
+        {
+            pendingConfirmAction();
+        }
+
+        pendingConfirmAction = null;
+    };
+
+    confirmNoBtn.onclick = function() {
+        confirmOverlayCnt.classList.add("hidden");
+        pendingConfirmAction = null;
+    };
+
+    confirmOverlayCnt.classList.remove("hidden");
+}
+
+function UseHint()
+{
+    if(!IsInfiniteMode() || isGameOver || hintUsesRemaining <= 0)
+    {
+        return;
+    }
+
+    let blankTiles = solutionCnt.querySelectorAll(".empty_tile.drop_allow");
+    if(blankTiles.length === 0)
+    {
+        return;
+    }
+
+    let randomIndex = Math.floor(Math.random() * blankTiles.length);
+    let targetTile = blankTiles[randomIndex];
+    let tileIndex = Array.prototype.indexOf.call(targetTile.parentNode.children, targetTile);
+
+    if(tileIndex < 0 || tileIndex >= finWord.length)
+    {
+        return;
+    }
+
+    let neededChar = finWord.charAt(tileIndex).toLowerCase();
+    let sourceTiles = jumbledCnt.querySelectorAll(":scope > .letters");
+    let sourceTile = null;
+
+    for(let i = 0; i < sourceTiles.length; i++)
+    {
+        if(sourceTiles[i].textContent.toLowerCase() === neededChar)
+        {
+            sourceTile = sourceTiles[i];
+            break;
+        }
+    }
+
+    if(sourceTile == null)
+    {
+        return;
+    }
+
+    hintUsesRemaining--;
+    UpdateScore(points_HintCost * -1);
+    DropTile(targetTile, sourceTile);
+    UpdateHintButtonState();
+}
+
+function UseSkip()
 {
     if(!IsInfiniteMode() || isGameOver)
     {
         return;
     }
 
-    isGameOver = true;
+    let blankTiles = solutionCnt.querySelectorAll(".empty_tile.drop_allow");
+    if(blankTiles.length === 0)
+    {
+        return;
+    }
+
+    attempts.push({jumble: solvedWords, word: `${finWord} (skipped)`, match: false});
+    WriteAttempts();
+    UpdateScore(points_SkipCost * -1);
+
     ClearGameTimer();
-    CreateGameOver();
-    ShowGameOver();
+    setTimeout(DoNextWordCheck, 150);
+}
+
+function RestartGame(forceRestart = false)
+{
+    if(forceRestart)
+    {
+        location.reload();
+        return;
+    }
+
+    ShowConfirmModal("Restart Run", "Restart this run and lose your current progress?", function() {
+        location.reload();
+    });
+}
+
+function EndRun(forceEnd = false)
+{
+    if(!IsInfiniteMode() || isGameOver)
+    {
+        return;
+    }
+
+    if(forceEnd)
+    {
+        isGameOver = true;
+        ClearGameTimer();
+        CreateGameOver();
+        ShowGameOver();
+        return;
+    }
+
+    ShowConfirmModal("End Infinite Run", "End this run and view your results now?", function() {
+        EndRun(true);
+    });
 }
 
 function ShowTitleOverlay()
