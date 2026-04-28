@@ -399,6 +399,10 @@ span.attempt-nomatch { color: var(--incorrect-red); font-weight: 600; text-trans
 #help {
     /* border-top: 1px solid rgba(168,85,247,0.2); */
     text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
     padding: 0.6rem 0;
 }
 
@@ -416,6 +420,11 @@ button.icons {
 button.icons:hover {
     transform: rotateZ(-20deg);
     filter: brightness(1.5) drop-shadow(0 0 8px var(--neon-teal));
+}
+
+button.icons-end {
+    color: var(--incorrect-red);
+    text-shadow: 0 0 12px rgba(244,63,94,0.65);
 }
 
 /* ── FOOTER ── */

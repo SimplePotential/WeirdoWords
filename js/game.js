@@ -4,6 +4,9 @@ const symNoMatch = "&cross;";
 const symValid = "&plus;";
 const symMissed = "-";
 
+const GAME_MODE_TIMED = 0;
+const GAME_MODE_INFINITE = 1;
+
 // ============================================================
 // GAME CONFIGURATION
 // Adjust these values to tune gameplay balance and scoring.
@@ -19,6 +22,9 @@ const points_ValidNonTarget = 10;   // Points for a valid word that is not the c
 const showCorrectPos = true;        // Underline correctly placed letters (set false for hard mode)
 const tileMinSize = 28;             // Minimum tile size in px before wrapping is allowed
 const tileGapSize = 8;              // Fallback gap size in px for tile fit calculations
+const infiniteWordLengthMin = 3;    // Minimum word length for Infinite mode
+const infiniteWordLengthMax = 20;   // Maximum word length for Infinite mode
+const attemptsMaxStored = 100;      // Keep only the most recent attempts for long infinite runs
 // ============================================================
 
 const progression = [
@@ -42,10 +48,12 @@ let wordOfWord;
 let msgCnt;
 let timerCnt;
 let timerCntTxt;
+let timerHolderCnt;
 let scoreCnt;
 let overlayCnt;
+let endRunBtn;
 
-let gameMode = 0; // Timed words; Infinite Play?  Other modes in future?  Limit to a day key similar to Wordle?
+let gameMode = GAME_MODE_TIMED;
 let solvedWords = 0;
 let attempts = new Array();
 let finWord;
@@ -60,8 +68,13 @@ let dlgConsent = null;
 let dlgResetGame = null;
 
 let score = 0;
+let wordsSolvedCount = 0;
+let totalGuessesCount = 0;
 let creditedValidWords = new Set();
 let validWordSet = new Set(wordList.map(e => e.toLowerCase()));
+
+let infiniteRunSeedBase = 0;
+let infiniteRunCycle = 0;
 
 let volSlider = null;
 let sound_place = null;
@@ -84,10 +97,12 @@ function Init()
     msgCnt = document.getElementById("msg");
 
     // Get the timer display holder
+    timerHolderCnt = document.getElementById("timerHolder");
     timerCnt = document.getElementById("timerbar");
     timerCntTxt = document.getElementById("timerbarTxt");
 
     overlayCnt = document.getElementById("overlay");
+    endRunBtn = document.getElementById("btnEndRun");
 
     volSlider = document.getElementById("volume");
 
@@ -119,23 +134,92 @@ function Init()
 
 function StartGame()
 {
+    StartRun(GAME_MODE_TIMED);
+}
+
+function StartInfinitePlay()
+{
+    StartRun(GAME_MODE_INFINITE);
+}
+
+function IsTimedMode()
+{
+    return gameMode === GAME_MODE_TIMED;
+}
+
+function IsInfiniteMode()
+{
+    return gameMode === GAME_MODE_INFINITE;
+}
+
+function StartRun(mode)
+{
     if(!overlayCnt.classList.contains("hidden"))
     {
         overlayCnt.classList.add("hidden");
     }
+
+    ClearGameTimer();
+
+    gameMode = mode;
+    isGameOver = false;
+    solvedWords = 0;
+    wordsSolvedCount = 0;
+    totalGuessesCount = 0;
+    score = 0;
+    attempts = [];
+    picked = [];
+    finWord = "";
+    creditedValidWords = new Set();
+    gameTimerTicks = gameTimerMax;
+
+    if(IsInfiniteMode())
+    {
+        infiniteRunSeedBase = GenerateInfiniteGameSeed();
+        infiniteRunCycle = 0;
+    }
+
+    document.getElementById("attempts").innerHTML = "";
+    msgCnt.textContent = "";
+    SetModeUi();
+    SetWordOfWord();
+    UpdateScore(0);
 
     sound_correct.play();
 
     DoNextWordCheck();
 }
 
+function SetModeUi()
+{
+    if(timerHolderCnt)
+    {
+        timerHolderCnt.style.display = (IsTimedMode() ? "" : "none");
+    }
+
+    if(endRunBtn)
+    {
+        endRunBtn.style.display = (IsInfiniteMode() ? "inline-flex" : "none");
+    }
+}
+
 function SetGameTimer()
 {
+    if(!IsTimedMode())
+    {
+        return;
+    }
+
     gameTimer = setInterval(CheckTimer, gameTimerInterval);
 }
 
 function CheckTimer()
 {
+    if(!IsTimedMode())
+    {
+        return;
+    }
+
     if(isGameOver)
     {
         // Don't keep getting words if game is over
@@ -143,7 +227,8 @@ function CheckTimer()
 
         // Show game over
         CreateGameOver();
-        let result = ShowGameOver();
+        ShowGameOver();
+        return;
     }
     
     if(gameTimerTicks >= 0)
@@ -165,12 +250,16 @@ function CheckTimer()
 
 function ClearGameTimer()
 {
-    clearInterval(gameTimer);
+    if(gameTimer != null)
+    {
+        clearInterval(gameTimer);
+        gameTimer = null;
+    }
 }
 
 function DoNextWordCheck()
 {
-    if(attempts != undefined)
+    if(IsTimedMode() && attempts != undefined)
     {
         let tmp = attempts.find((e)=>{return e.jumble==solvedWords && e.match == true});
         if(tmp == undefined && solvedWords > 0)
@@ -188,12 +277,15 @@ function DoNextWordCheck()
 
     if(isGameOver){ return false; }
 
-    // Reset timer
-    gameTimerTicks = gameTimerMax;
+    if(IsTimedMode())
+    {
+        // Reset timer
+        gameTimerTicks = gameTimerMax;
 
-    // Update timer display
-    timerCnt.value = 100;
-    timerCntTxt.textContent = (gameTimerMax / gameTimerInterval).toString() + " Seconds";
+        // Update timer display
+        timerCnt.value = 100;
+        timerCntTxt.textContent = (gameTimerMax / gameTimerInterval).toString() + " Seconds";
+    }
 
     // Increase next word count
     solvedWords++;
@@ -201,32 +293,67 @@ function DoNextWordCheck()
     // Set new word and log
     SetNextWord();
 
+    if(isGameOver)
+    {
+        CreateGameOver();
+        ShowGameOver();
+        return false;
+    }
+
     ClearGameTimer(); // Ensure game timer got cleared
 
-    SetGameTimer(); // Restart game timer
+    SetGameTimer(); // Restart game timer (timed mode only)
     
 }
 
 function SetNextWord()
 {
 
-    if(solvedWords > maxWords)
+    if(IsTimedMode() && solvedWords > maxWords)
     {
         isGameOver = true;
         return;
     }
 
-    let minLength = 4;
-    let maxLength = 10;
+    let minLength = infiniteWordLengthMin;
+    let maxLength = infiniteWordLengthMax;
 
-    if(gameMode == 0 && solvedWords <= progression.length)
+    if(IsTimedMode() && solvedWords <= progression.length)
     {
         minLength = progression[solvedWords-1].mn;
         maxLength = progression[solvedWords-1].mx;
     }
 
+    let availableWords = GetAvailableWords(maxLength, minLength, picked);
+    if(availableWords.length === 0)
+    {
+        if(IsInfiniteMode())
+        {
+            infiniteRunCycle++;
+            picked = [];
+            msgCnt.textContent = "All eligible words used. Starting a fresh shuffle.";
+            availableWords = GetAvailableWords(maxLength, minLength, picked);
+        }
+        else
+        {
+            isGameOver = true;
+            return;
+        }
+    }
+
+    if(availableWords.length === 0)
+    {
+        isGameOver = true;
+        return;
+    }
+
     // Generate the next word jumble
     finWord = GetWord(solvedWords, maxLength, minLength, picked);
+    if(!finWord)
+    {
+        isGameOver = true;
+        return;
+    }
 
     // Store words picked for later use
     picked.push(finWord);
@@ -394,6 +521,12 @@ function SetEvents()
 
 function SetWordOfWord()
 {
+    if(IsInfiniteMode())
+    {
+        wordOfWord.textContent = `WORDS SOLVED: ${wordsSolvedCount}`;
+        return;
+    }
+
     wordOfWord.textContent = `WORD ${solvedWords} OF ${maxWords}`;
 }
 
@@ -487,7 +620,17 @@ function DropTile(target, source)
     if(isMatch == 3)
     {
         sound_correct.play();
-        UpdateScore(points_Correct + (points_Bonus * (gameTimerTicks / gameTimerInterval)));
+        wordsSolvedCount++;
+        SetWordOfWord();
+        if(IsTimedMode())
+        {
+            UpdateScore(points_Correct + (points_Bonus * (gameTimerTicks / gameTimerInterval)));
+        }
+        else
+        {
+            UpdateScore(points_Correct);
+        }
+
         ClearGameTimer();
         setTimeout(DoNextWordCheck, 2000); // Allow the animation to play out
     }
@@ -581,7 +724,7 @@ function MatchCheck()
 
         attempts.push({jumble: solvedWords, word: placedWord_Formatted, match: false});
 
-        if(placedWord_Formatted.indexOf("<u>") != -1)
+        if(IsTimedMode() && placedWord_Formatted.indexOf("<u>") != -1)
         {
             // If they got a letter correct, add a bit more time to guess.
             if((gameTimerTicks * gameTimeBonusTicks) < gameTimerMax)
@@ -618,7 +761,18 @@ function WriteAttempts()
     let aClass = (lastAttempt.match == true ? "attempt-matched" : (isValidAlt ? "attempt-valid" : "attempt-nomatch"));
     let aMatch = (lastAttempt.match == true ? symMatch : (isValidAlt ? symValid : symNoMatch));
     let rowHTML = `<div class="attempt-row attempt-${aClass} attempt-new"><span class="attempt-symbol ${aClass}">${aMatch}</span> <span class="attempt-word ${aClass}">${lastAttempt.word.toUpperCase()}</span></div>`;
+    totalGuessesCount++;
     aList.innerHTML = rowHTML + aList.innerHTML;
+
+    if(attempts.length > attemptsMaxStored)
+    {
+        attempts = attempts.slice(attempts.length - attemptsMaxStored);
+    }
+
+    while(aList.children.length > attemptsMaxStored)
+    {
+        aList.removeChild(aList.lastElementChild);
+    }
 
     // set msg text under solution for color impaired players
     msgCnt.textContent = (lastAttempt.match == true ? "MATCH!" : (isValidAlt ? "VALID WORD, FIND THE TARGET!" : "NO MATCH!"));
@@ -698,16 +852,35 @@ function GetWord(solved, maxLength = 8, minLength = 4, exceptWords = null)
     let seed;
     let word;
 
-    let wordList_Filtered = wordList.filter( (e) => { return e.length >= minLength && e.length <= maxLength } );
+    let wordList_Filtered = GetAvailableWords(maxLength, minLength, exceptWords);
+    if(wordList_Filtered.length === 0)
+    {
+        return null;
+    }
+
+    if(IsTimedMode())
+    {
+        seed = GenerateSeed(solved+1*10);
+    }
+    else
+    {
+        seed = GenerateInfiniteSeed(solved+1*10);
+    }
+
+    word = Math.floor(mulberry32(seed)() * wordList_Filtered.length );
+    return wordList_Filtered[word];
+}
+
+function GetAvailableWords(maxLength, minLength, exceptWords = null)
+{
+    let wordList_Filtered = wordList.filter((e) => { return e.length >= minLength && e.length <= maxLength; });
 
     if(exceptWords != null)
     {
-        wordList_Filtered = wordList_Filtered.filter( (e) => { return !exceptWords.includes(e) } );
+        wordList_Filtered = wordList_Filtered.filter((e) => { return !exceptWords.includes(e); });
     }
 
-    seed = GenerateSeed(solved+1*10);
-    word = Math.floor(mulberry32(seed)() * wordList_Filtered.length );
-    return wordList_Filtered[word];
+    return wordList_Filtered;
 }
 
 function GenerateSeed(seq = 1)
@@ -719,6 +892,16 @@ function GenerateSeed(seq = 1)
     i.setSeconds(0);
     i.setMilliseconds(seq);
     return i.getTime();
+}
+
+function GenerateInfiniteGameSeed()
+{
+    return Date.now();
+}
+
+function GenerateInfiniteSeed(seq = 1)
+{
+    return infiniteRunSeedBase + (infiniteRunCycle * 1000003) + seq;
 }
 
 /*
@@ -746,13 +929,31 @@ function CreateGameOver()
     txtBody = "<b>Score</b><br/>";
     txtBody += "<span>" + score + "</span>";
 
-    txtBody += "<b>Average Guesses</b><br/>";
-    txtBody += "<span>" + stats[0].avg + "</span>";
+    if(IsInfiniteMode())
+    {
+        let avgGuessesInfinite = (wordsSolvedCount > 0 ? (totalGuessesCount / wordsSolvedCount).toFixed(2) : "0.00");
 
-    txtBody += "<b>Total Guesses</b><br/>";
-    txtBody += "<span>" + stats[0].tot + "</span>";
+        txtBody += "<b>Words Solved</b><br/>";
+        txtBody += "<span>" + wordsSolvedCount + "</span>";
 
-    txtBody += "<br/><div style=\"font-size: 0.9rem; margin-top: 1rem;\">Feel free to play again however the word selection will be the same until approximately Midnight local time.</div>";
+        txtBody += "<b>Average Guesses</b><br/>";
+        txtBody += "<span>" + avgGuessesInfinite + "</span>";
+
+        txtBody += "<b>Total Guesses</b><br/>";
+        txtBody += "<span>" + totalGuessesCount + "</span>";
+
+        txtBody += "<br/><div style=\"font-size: 0.9rem; margin-top: 1rem;\">Infinite mode can be played as long as you want. Start another run any time.</div>";
+    }
+    else
+    {
+        txtBody += "<b>Average Guesses</b><br/>";
+        txtBody += "<span>" + stats[0].avg + "</span>";
+
+        txtBody += "<b>Total Guesses</b><br/>";
+        txtBody += "<span>" + stats[0].tot + "</span>";
+
+        txtBody += "<br/><div style=\"font-size: 0.9rem; margin-top: 1rem;\">Feel free to play again however the word selection will be the same until approximately Midnight local time.</div>";
+    }
 
     document.getElementById("gameOverBody").innerHTML = txtBody;
 }
@@ -784,6 +985,12 @@ function AnalyzeAttempts()
     let numAttempts = new Array();
     let avgAttempts = 0;
 
+    if(IsInfiniteMode())
+    {
+        let avgInfinite = (wordsSolvedCount > 0 ? (totalGuessesCount / wordsSolvedCount) : 0);
+        return [{n: [], tot: totalGuessesCount, avg: avgInfinite}];
+    }
+
     for(let i=1; i<=maxWords; i++)
     {
         let t = attempts.filter(o=>o.jumble==i);
@@ -805,6 +1012,19 @@ function RestartGame()
 {
     // TODO: A true restart that allows you to play a new set of words
     location.reload();
+}
+
+function EndRun()
+{
+    if(!IsInfiniteMode() || isGameOver)
+    {
+        return;
+    }
+
+    isGameOver = true;
+    ClearGameTimer();
+    CreateGameOver();
+    ShowGameOver();
 }
 
 function ShowTitleOverlay()

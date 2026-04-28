@@ -46,6 +46,7 @@
             </div>
             <div id="help">
                 <button class="material-icons icons" id="btnRestart" title="Restart Game" aria-label="Restart Game" type="button" onclick="RestartGame()">refresh</button>
+                <button class="material-icons icons icons-end" id="btnEndRun" title="End Infinite Run" aria-label="End Infinite Run" type="button" onclick="EndRun()" style="display:none;">stop_circle</button>
             </div>
             <div id="footer" class="footer">
                 <a href="https://www.simplepotential.com" target="_blank" rel="noopener noreferrer">&copy; Simple Potential</a> |
@@ -74,7 +75,7 @@
 
                     <div id="overlay_main_menu">
                         <button type="button" onclick="StartGame()" aria-label="Start Timed Daily game">Timed Daily</button>
-                        <button type="button" disabled aria-disabled="true" aria-label="Infinite Play mode (not yet available)">Infinite Play</button>
+                        <button type="button" onclick="StartInfinitePlay()" aria-label="Start Infinite Play mode">Infinite Play</button>
                     </div>
 
                     <div id="overlay_main_volume">
@@ -83,7 +84,7 @@
                     </div>
 
                     <div id="overlay_main_notice">
-                        Timed Daily is the only mode available but more modes are planned for the future!  Follow the GitHub repo to stay up to date on development and new releases!
+                        Timed Daily and Infinite Play are available now. More modes are planned for future updates.
                     </div>
                 </div>
             </div>
