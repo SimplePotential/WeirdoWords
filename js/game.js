@@ -1231,7 +1231,8 @@ function UseSkip()
     attempts.push({jumble: solvedWords, word: `${finWord} (skipped)`, match: false});
     WriteAttempts();
     UpdateScore(points_SkipCost * -1);
-
+    sound_wrong.play();
+    
     ClearGameTimer();
     setTimeout(DoNextWordCheck, 150);
 }
