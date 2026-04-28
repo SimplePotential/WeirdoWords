@@ -1177,7 +1177,7 @@ function UseSkip()
 
 function RestartGame(forceRestart = false)
 {
-    if(forceRestart)
+    if(forceRestart || (IsTimedMode() && isGameOver))
     {
         location.reload();
         return;
