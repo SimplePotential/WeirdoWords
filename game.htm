@@ -46,6 +46,9 @@
             </div>
             <div id="help">
                 <button class="material-icons icons" id="btnRestart" title="Restart Game" aria-label="Restart Game" type="button" onclick="RestartGame()">refresh</button>
+                <button class="material-icons icons icons-hint" id="btnHint" title="Use Hint" aria-label="Use Hint" type="button" onclick="UseHint()" style="display:none;">lightbulb</button>
+                <button class="material-icons icons icons-skip" id="btnSkip" title="Skip Word" aria-label="Skip Word" type="button" onclick="UseSkip()" style="display:none;">skip_next</button>
+                <button class="material-icons icons icons-end" id="btnEndRun" title="End Infinite Run" aria-label="End Infinite Run" type="button" onclick="EndRun()" style="display:none;">stop_circle</button>
             </div>
             <div id="footer" class="footer">
                 <a href="https://www.simplepotential.com" target="_blank" rel="noopener noreferrer">&copy; Simple Potential</a> |
@@ -56,34 +59,66 @@
                 <div id="overlay_main">
                     <div id="overlay_main_title">WEIRDO WORDS</div>
                     <div id="overlay_main_desc">
-                        A word jumble game where you have to guess the word before time runs out.  The faster you guess, the more points you earn!  But be careful, wrong guesses will cost you points and time!
-                    </div>
-                    <div id="overlay_main_rules">
-                        <ol>
-                            <li>You will be given 10 words daily; they change at approximately Midnight local time.</li>
-                            <li>You have <span id="timerSeconds"></span> seconds to guess each word.</li>
-                            <li>Type, Drag, or Click/Tap letter to build the word.</li>
-                            <li>Use Backspace or Click/Tap to move placed letters back.</li>
-                            <li>Correct: +<span id="pointsCorrect"></span> points. Wrong: -<span id="pointsIncorrect"></span> points.</li>
-                            <li>For each second left on the clock, you earn +<span id="pointsBonus"></span> bonus points.</li>
-                            <li>Wrong guesses underline letters in the correct position and add <span id="bonusSeconds"></span> seconds (up to <span id="bonusSecondsMax"></span> seconds total) when at least 1 letter is correct.</li>
-                            <li>Missing a word shows as wrong, in italics, and reveals the correct word when timer expires.</li>
-                            <li>A valid but unexpected word is marked valid and earns +<span id="pointsValidNonTarget"></span> points but does not progress game.</li>
-                        </ol>
+                        A word jumble challenge with two ways to play: Timed Daily for a fixed 10-word run, and Infinite Play for nonstop word solving with strategy tools like Hint and Skip.
                     </div>
 
                     <div id="overlay_main_menu">
                         <button type="button" onclick="StartGame()" aria-label="Start Timed Daily game">Timed Daily</button>
-                        <button type="button" disabled aria-disabled="true" aria-label="Infinite Play mode (not yet available)">Infinite Play</button>
+                        <button type="button" onclick="StartInfinitePlay()" aria-label="Start Infinite Play mode">Infinite Play</button>
+                        <button type="button" onclick="ShowHowToPlayModal()" aria-label="Read rules for both game modes">How To Play</button>
                     </div>
 
                     <div id="overlay_main_volume">
                         <label for="volume">Volume</label><br>
                         <input type="range" id="volume" min="0" max="1" value=".5" step="0.01" onchange="ChangeVolume()">
                     </div>
-
-                    <div id="overlay_main_notice">
-                        Timed Daily is the only mode available but more modes are planned for the future!  Follow the GitHub repo to stay up to date on development and new releases!
+                </div>
+            </div>
+            <div id="howToPlayOverlay" class="hidden" role="dialog" aria-modal="true" aria-labelledby="howToPlayTitle">
+                <div id="howToPlayCard">
+                    <div id="howToPlayHeader">
+                        <div id="howToPlayTitle">How To Play</div>
+                        <button id="howToPlayClose" type="button" aria-label="Close how to play" onclick="HideHowToPlayModal()">Close</button>
+                    </div>
+                    <div id="howToPlayBody">
+                        <div class="howToPlay_section">
+                            <div class="howToPlay_section_title">Timed Daily</div>
+                            <ol class="howToPlay_rules">
+                                <li>You get 10 words each day, rotating around local midnight.</li>
+                                <li>You have <span id="timerSeconds"></span> seconds per word.</li>
+                                <li>Type, Drag, or Click/Tap letters to build your answer.</li>
+                                <li>Use Backspace or Click/Tap to move placed letters back.</li>
+                                <li>Correct answers earn +<span id="pointsCorrect"></span> points. Wrong answers cost -<span id="pointsIncorrect"></span> points.</li>
+                                <li>Each second left on the timer adds +<span id="pointsBonus"></span> bonus points.</li>
+                                <li>Wrong guesses that include at least one correct-position letter add <span id="bonusSeconds"></span> seconds back, up to <span id="bonusSecondsMax"></span> seconds total.</li>
+                                <li>When time expires, the word is marked missed, shown in italics, and the answer is revealed.</li>
+                                <li>Valid but non-target words are marked valid and earn +<span id="pointsValidNonTarget"></span> points, but do not advance the round.</li>
+                            </ol>
+                        </div>
+                        <div class="howToPlay_section">
+                            <div class="howToPlay_section_title">Infinite Play</div>
+                            <ol class="howToPlay_rules">
+                                <li>Play continuously with no per-word timer and no fixed word limit.</li>
+                                <li>Words cycle through eligible lengths and reshuffle when the pool is exhausted.</li>
+                                <li>Correct answers earn +<span id="pointsCorrectInfinite"></span> points and move to the next word.</li>
+                                <li>Wrong answers cost -<span id="pointsIncorrectInfinite"></span> points.</li>
+                                <li>Hint is available only in Infinite Play. It places one correct letter and costs -<span id="pointsHintCost"></span> points each use.</li>
+                                <li>You get a limited hint pool per word based on word length.</li>
+                                <li>Skip Word is available only in Infinite Play. It marks the word as skipped and costs -<span id="pointsSkipCost"></span> points.</li>
+                                <li>Valid but non-target words earn +<span id="pointsValidNonTargetInfinite"></span> points, but do not advance the round.</li>
+                                <li>Use End Run anytime to finish and view your results.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="confirmOverlay" class="hidden">
+                <div id="confirmCard">
+                    <div id="confirmTitle">Confirm</div>
+                    <div id="confirmBody">Are you sure?</div>
+                    <div id="confirmButtons">
+                        <button id="confirmYes" type="button">Yes</button>
+                        <button id="confirmNo" type="button">No</button>
                     </div>
                 </div>
             </div>
