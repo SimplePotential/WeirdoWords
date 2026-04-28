@@ -511,61 +511,11 @@ div.footer a:hover {
     margin-bottom: 0.5rem;
 }
 
-#overlay_main_desc, #overlay_main_notice {
+#overlay_main_desc {
     text-align: center;
     font-size: 0.85rem;
     color: var(--text-muted);
     margin-bottom: 0;
-}
-
-#overlay_main_rules {
-    border: 1px solid rgba(168,85,247,0.25);
-    border-radius: 0.75rem;
-    background: rgba(168,85,247,0.06);
-    padding: 0.75rem 1rem;
-    flex: 1 1 auto;
-    min-height: 0;
-    max-height: min(50%, 50vh);
-    overflow-y: auto;
-    font-size: 0.82rem;
-    color: var(--text-primary);
-    line-height: 1.7;
-    margin-bottom: 0;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(168,85,247,0.65) rgba(6,1,20,0.55);
-}
-
-#overlay_main_rules ol {
-    margin: 0;
-    padding-left: 1.75rem;
-}
-
-#overlay_main_rules li {
-    margin-bottom: 0.4rem;
-}
-
-#overlay_main_rules li:last-child {
-    margin-bottom: 0;
-}
-
-#overlay_main_rules::-webkit-scrollbar {
-    width: 0.5rem;
-}
-
-#overlay_main_rules::-webkit-scrollbar-track {
-    background: rgba(6,1,20,0.55);
-    border-radius: 999px;
-}
-
-#overlay_main_rules::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, rgba(168,85,247,0.95), rgba(6,182,212,0.85));
-    border-radius: 999px;
-    border: 1px solid rgba(168,85,247,0.2);
-    box-shadow: 0 0 10px rgba(168,85,247,0.45);
-}
-
-#overlay_main_rules::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, rgba(192,132,252,0.98), rgba(34,211,238,0.92));
 }
 
 #overlay_main_menu {
@@ -613,6 +563,127 @@ div.footer a:hover {
 input[type=range] {
     width: 100%;
     accent-color: var(--neon-purple);
+}
+
+/* ── HOW TO PLAY MODAL ── */
+#howToPlayOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(6,1,20,0.75);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+#howToPlayOverlay.hidden { display: none; }
+
+#howToPlayCard {
+    background: rgba(14,8,37,0.95);
+    border: 1px solid rgba(168,85,247,0.35);
+    border-radius: 1.25rem;
+    padding: 1.1rem;
+    width: min(92vw, 620px);
+    max-height: min(84vh, 760px);
+    box-shadow: 0 0 40px rgba(168,85,247,0.25), 0 0 16px rgba(6,182,212,0.15);
+    animation: slideIn 0.2s ease-out;
+    color: var(--text-primary);
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+#howToPlayHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+}
+
+#howToPlayTitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+    background: linear-gradient(90deg, var(--neon-purple), var(--neon-pink));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+#howToPlayClose {
+    background: linear-gradient(135deg, rgba(124,58,237,0.7), rgba(6,182,212,0.5));
+    border: 1px solid rgba(168,85,247,0.4);
+    border-radius: 2rem;
+    color: #e5e0ff;
+    cursor: pointer;
+    font-family: var(--font-main);
+    font-size: 0.92rem;
+    font-weight: 700;
+    padding: 0.35rem 0.95rem;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+#howToPlayClose:hover {
+    box-shadow: 0 0 20px rgba(124,58,237,0.5);
+    transform: translateY(-2px);
+}
+
+#howToPlayBody {
+    overflow-y: auto;
+    min-height: 0;
+    max-height: min(68vh, 620px);
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    padding-right: 0.25rem;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(168,85,247,0.65) rgba(6,1,20,0.55);
+}
+
+#howToPlayBody::-webkit-scrollbar {
+    width: 0.5rem;
+}
+
+#howToPlayBody::-webkit-scrollbar-track {
+    background: rgba(6,1,20,0.55);
+    border-radius: 999px;
+}
+
+#howToPlayBody::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(168,85,247,0.95), rgba(6,182,212,0.85));
+    border-radius: 999px;
+    border: 1px solid rgba(168,85,247,0.2);
+}
+
+.howToPlay_section {
+    border: 1px solid rgba(168,85,247,0.25);
+    border-radius: 0.75rem;
+    background: rgba(168,85,247,0.06);
+    padding: 0.75rem 1rem;
+}
+
+.howToPlay_section_title {
+    font-size: 0.98rem;
+    font-weight: 700;
+    margin-bottom: 0.45rem;
+    letter-spacing: 0.03em;
+    color: #ddd6fe;
+}
+
+.howToPlay_rules {
+    margin: 0;
+    padding-left: 1.6rem;
+    font-size: 0.82rem;
+    color: var(--text-primary);
+    line-height: 1.65;
+}
+
+.howToPlay_rules li {
+    margin-bottom: 0.35rem;
+}
+
+.howToPlay_rules li:last-child {
+    margin-bottom: 0;
 }
 
 /* ── CONFIRM MODAL ── */
@@ -807,22 +878,27 @@ input[type=range] {
         gap: 0.45rem;
     }
 
-    #overlay_main_rules {
-        min-height: 0;
-        max-height: min(50%, 50vh);
-        line-height: 1.55;
-    }
-
-    #overlay_main_rules li {
-        margin-bottom: 0.3rem;
-    }
-
     #overlay_main_menu {
         width: 100%;
     }
 
     #overlay_main_volume {
         width: 100%;
+    }
+
+    #howToPlayCard {
+        width: min(96vw, 620px);
+        padding: 0.9rem;
+        max-height: 88vh;
+    }
+
+    #howToPlayBody {
+        max-height: 74vh;
+    }
+
+    .howToPlay_rules {
+        font-size: 0.8rem;
+        line-height: 1.55;
     }
 }
 @keyframes shake {

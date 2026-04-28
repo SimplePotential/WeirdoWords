@@ -53,6 +53,7 @@ let timerCntTxt;
 let timerHolderCnt;
 let scoreCnt;
 let overlayCnt;
+let howToPlayOverlayCnt;
 let restartBtn;
 let hintBtn;
 let skipBtn;
@@ -114,6 +115,7 @@ function Init()
     timerCntTxt = document.getElementById("timerbarTxt");
 
     overlayCnt = document.getElementById("overlay");
+    howToPlayOverlayCnt = document.getElementById("howToPlayOverlay");
     restartBtn = document.getElementById("btnRestart");
     hintBtn = document.getElementById("btnHint");
     skipBtn = document.getElementById("btnSkip");
@@ -138,6 +140,16 @@ function Init()
     volLevel = parseFloat(volSlider.value);
 
     SetupSounds();
+
+    if(howToPlayOverlayCnt)
+    {
+        howToPlayOverlayCnt.addEventListener("click", function(e) {
+            if(e.target === howToPlayOverlayCnt)
+            {
+                HideHowToPlayModal();
+            }
+        });
+    }
 
     window.addEventListener("resize", function() {
         clearTimeout(resizeTimer);
@@ -175,6 +187,8 @@ function IsInfiniteMode()
 
 function StartRun(mode)
 {
+    HideHowToPlayModal();
+
     if(!overlayCnt.classList.contains("hidden"))
     {
         overlayCnt.classList.add("hidden");
@@ -405,7 +419,21 @@ function SetNextWord()
     ResetWord();
 }
 
-function ResetWord()
+function ResetTilesAfterWrongGuess()
+{
+    // After a wrong guess, only keep hint-placed letters on the board.
+    ResetTileMatchStyle();
+
+    let placedTiles = solutionCnt.querySelectorAll("div[data-placed='1']");
+    placedTiles.forEach(tile => {
+        if(tile.dataset.hintplaced != 1)
+        {
+            ResetTile(tile);
+        }
+    });
+}
+
+function ResetTiles()
 {
     UpdateTileSize(finWord.length);
 
@@ -420,6 +448,11 @@ function ResetWord()
 
     // Set word of word
     SetWordOfWord();
+}
+
+function ResetWord()
+{
+    ResetTiles();
 
     if(IsInfiniteMode())
     {
@@ -517,6 +550,21 @@ function SetEvents()
         // Set Keyboard Events
         document.addEventListener("keyup", function(e){
 
+            if(IsHowToPlayModalOpen())
+            {
+                if(e.code == "Escape")
+                {
+                    HideHowToPlayModal();
+                }
+
+                return true;
+            }
+
+            if(e.code == "Escape")
+            {
+                return true;
+            }
+
             /*
             if( e.code == "Enter")
             {
@@ -595,6 +643,11 @@ function SolutionTile_Click(tile)
 {
     if(isGameOver){ return false; }
 
+    // Don't allow removal of hint-placed tiles
+    if(tile.dataset.hintplaced == 1)
+    {
+        return false;
+    }
     let lastAttempt = attempts[attempts.length-1];
     if(tile.dataset.placed == 1 && !tile.classList.contains("matched"))
     {
@@ -612,8 +665,15 @@ function SolutionTile_Backspace()
     
     if(tiles.length > 0)
     {
-        let rightMostTile = tiles[tiles.length-1];
-        SolutionTile_Click(rightMostTile);
+        // Find the rightmost tile that is NOT hint-placed
+        for(let i = tiles.length - 1; i >= 0; i--)
+        {
+            if(tiles[i].dataset.hintplaced != 1)
+            {
+                SolutionTile_Click(tiles[i]);
+                return;
+            }
+        }
     }
 
 }
@@ -689,7 +749,7 @@ function DropTile(target, source)
     {
         sound_wrong.play();
         UpdateScore(points_Incorrect);
-        setTimeout(ResetWord, 1000);
+        setTimeout(ResetTilesAfterWrongGuess, 1000);
     }
     if(isMatch == 2)
     {
@@ -702,7 +762,7 @@ function DropTile(target, source)
             UpdateScore(points_ValidNonTarget);
         }
 
-        setTimeout(ResetWord, 1000);
+        setTimeout(ResetTilesAfterWrongGuess, 1000);
     }
 }
 
@@ -1151,6 +1211,7 @@ function UseHint()
     hintUsesRemaining--;
     UpdateScore(points_HintCost * -1);
     DropTile(targetTile, sourceTile);
+    targetTile.dataset.hintplaced = 1;  // Mark as hint-placed, cannot be removed
     UpdateHintButtonState();
 }
 
@@ -1213,14 +1274,44 @@ function ShowTitleOverlay()
 {
 
     document.getElementById("pointsCorrect").textContent = points_Correct;
+    document.getElementById("pointsCorrectInfinite").textContent = points_Correct;
     document.getElementById("pointsIncorrect").textContent = points_Incorrect * -1;
+    document.getElementById("pointsIncorrectInfinite").textContent = points_Incorrect * -1;
     document.getElementById("pointsBonus").textContent = points_Bonus;
     document.getElementById("pointsValidNonTarget").textContent = points_ValidNonTarget;
+    document.getElementById("pointsValidNonTargetInfinite").textContent = points_ValidNonTarget;
+    document.getElementById("pointsHintCost").textContent = points_HintCost;
+    document.getElementById("pointsSkipCost").textContent = points_SkipCost;
     document.getElementById("timerSeconds").textContent = gameTimerMax / 1000;
     document.getElementById("bonusSeconds").textContent = (gameTimerInterval * gameTimeBonusTicks) / gameTimerInterval;
     document.getElementById("bonusSecondsMax").textContent = gameTimerMax / gameTimerInterval;
 
     overlayCnt.classList.remove("hidden");
+}
+
+function IsHowToPlayModalOpen()
+{
+    return howToPlayOverlayCnt && !howToPlayOverlayCnt.classList.contains("hidden");
+}
+
+function ShowHowToPlayModal()
+{
+    if(!howToPlayOverlayCnt)
+    {
+        return;
+    }
+
+    howToPlayOverlayCnt.classList.remove("hidden");
+}
+
+function HideHowToPlayModal()
+{
+    if(!howToPlayOverlayCnt)
+    {
+        return;
+    }
+
+    howToPlayOverlayCnt.classList.add("hidden");
 }
 
 function ChangeVolume()
