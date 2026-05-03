@@ -1303,7 +1303,7 @@ function AnalyzeAttempts()
 function UpdateScore(value)
 {
     score += value;
-    scoreCnt.innerHTML = `POINTS<br/>${score}`;
+    scoreCnt.innerHTML = `${score}`;
 }
 
 function UpdateHintButtonState()
