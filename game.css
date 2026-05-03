@@ -981,7 +981,8 @@ input[type=range] {
     .game {
         width: 99%;
         max-width: 99%;
-        height: calc(100vh - 0.5rem);
+        /* height: calc(100vh - 0.5rem); */
+        height: 99%;
         max-height: none;
         border-radius: 1rem;
     }
