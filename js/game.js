@@ -1396,8 +1396,19 @@ function RestartGame(forceRestart = false)
 
 function EndRun(forceEnd = false)
 {
-    if(!IsInfiniteMode() || isGameOver)
+    if(!IsInfiniteMode())
     {
+        return;
+    }
+
+    if(isGameOver)
+    {
+        // Game already ended but user closed the dialog; re-show the game over screen.
+        let gameOverOverlay = document.getElementById("gameOverOverlay");
+        if(gameOverOverlay)
+        {
+            gameOverOverlay.classList.remove("hidden");
+        }
         return;
     }
 
@@ -1415,9 +1426,33 @@ function EndRun(forceEnd = false)
     });
 }
 
+function GoToTitleScreen()
+{
+    // Already on the title screen
+    if(overlayCnt && !overlayCnt.classList.contains("hidden"))
+    {
+        return;
+    }
+
+    // Game is already over — safe to go straight to the title screen
+    if(isGameOver)
+    {
+        let gameOverOverlay = document.getElementById("gameOverOverlay");
+        if(gameOverOverlay) { gameOverOverlay.classList.add("hidden"); }
+        ShowTitleOverlay();
+        return;
+    }
+
+    // Game in progress — confirm before abandoning
+    ShowConfirmModal("Go to Title Screen?", "This will end your current game. Continue?", function() {
+        ClearGameTimer();
+        isGameOver = true;
+        ShowTitleOverlay();
+    });
+}
+
 function ShowTitleOverlay()
 {
-
     document.getElementById("pointsCorrect").textContent = points_Correct;
     document.getElementById("pointsCorrectInfinite").textContent = points_Correct;
     document.getElementById("pointsIncorrect").textContent = points_Incorrect * -1;

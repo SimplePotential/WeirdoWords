@@ -399,12 +399,16 @@ div.summary-child::-webkit-scrollbar-thumb {
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
+    padding: 0.25rem;
 }
 #score {
     width: 100%;
     text-align: center;
-    font-size: 2.4rem;
+    font-size: clamp(1rem, 4vw, 2.4rem);
     font-weight: 700;
+    word-break: break-word;
+    overflow: hidden;
     background: linear-gradient(90deg, var(--neon-gold), var(--neon-pink));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -966,16 +970,19 @@ input[type=range] {
 
 @media (max-width: 640px) {
     :root {
-        --tile-size: 2.9rem;
-        --tile-font-size: 1.3rem;
+        --tile-size: 3.2rem;
+        --tile-font-size: 1.45rem;
     }
 
     body {
-        padding: 0.5rem;
+        padding: 0.25rem;
     }
 
     .game {
-        height: calc(100vh - 1rem);
+        width: 99%;
+        max-width: 99%;
+        height: calc(100vh - 0.5rem);
+        max-height: none;
         border-radius: 1rem;
     }
 
