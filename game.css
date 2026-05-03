@@ -249,9 +249,18 @@ div.letters:nth-child(6n+6) {
     box-shadow: 0 0 14px rgba(196,181,253,0.4);
 }
 
-div.letters:hover {
-    transform: translateY(-3px) scale(1.1);
-    filter: brightness(1.3);
+@media (hover: hover) and (pointer: fine) {
+    div.letters:hover {
+        transform: translateY(-3px) scale(1.1);
+        filter: brightness(1.3);
+    }
+}
+
+@media (hover: none), (pointer: coarse) {
+    div.letters:active {
+        transform: translateY(-1px) scale(1.04);
+        filter: brightness(1.2);
+    }
 }
 
 /* Empty solution slots */
@@ -981,9 +990,8 @@ input[type=range] {
     .game {
         width: 99%;
         max-width: 99%;
-        /* height: calc(100vh - 0.5rem); */
-        height: 99%;
-        max-height: none;
+        height: 99svh;
+        max-height: 99svh;
         border-radius: 1rem;
     }
 
@@ -1027,5 +1035,95 @@ input[type=range] {
 
     .volumeSlider {
         width: clamp(110px, 42vw, 180px);
+    }
+}
+
+@media (orientation: landscape) and (max-height: 560px) {
+    :root {
+        --tile-size: 2.4rem;
+        --tile-font-size: 1.05rem;
+    }
+
+    body {
+        padding: 0.2rem;
+    }
+
+    .game {
+        width: 100%;
+        max-width: 100%;
+        height: 100svh;
+        max-height: 100svh;
+        border-radius: 0.75rem;
+    }
+
+    .game-header {
+        padding: 0.6rem 0.8rem 0.45rem;
+    }
+
+    #gameTitle {
+        font-size: 1.35rem;
+    }
+
+    #word_of_word {
+        font-size: 0.65rem;
+    }
+
+    #timerHolder {
+        height: 1rem;
+    }
+
+    #timerbarTxt {
+        font-size: 0.62rem;
+    }
+
+    .game-body {
+        padding: 0.35rem 0.6rem;
+    }
+
+    .jumble,
+    div.solution {
+        gap: 0.25rem;
+        padding: 0.3rem 0;
+    }
+
+    #msg {
+        font-size: 0.72rem;
+        min-height: 1.1rem;
+        padding: 0.05rem 0;
+    }
+
+    div.summary {
+        gap: 0.35rem;
+    }
+
+    div.summary-child {
+        min-height: 3.5rem;
+        max-height: 3.5rem;
+        padding: 0.25rem;
+        font-size: 0.72rem;
+    }
+
+    #help {
+        gap: 0.35rem;
+        padding: 0.25rem 0;
+    }
+
+    button.icons {
+        font-size: 1.6rem;
+    }
+
+    .game-volume {
+        margin-bottom: 0.05rem;
+    }
+
+    .volumeIcon {
+        width: 1.9rem;
+        height: 1.9rem;
+        font-size: 1.05rem;
+    }
+
+    .footer {
+        font-size: 0.55rem;
+        padding: 0.25rem;
     }
 }

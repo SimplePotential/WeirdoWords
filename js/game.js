@@ -603,7 +603,50 @@ function UpdateTileSize(wordLength)
     }
 
     const gap = parseFloat(getComputedStyle(jumbledCnt).gap) || tileGapSize;
-    const fitTilePx = (containerWidth - (wordLength - 1) * gap) / wordLength;
+    const fitTilePx_Width = (containerWidth - (wordLength - 1) * gap) / wordLength;
+
+    let fitTilePx_Height = Number.POSITIVE_INFINITY;
+    const gameBodyCnt = jumbledCnt.closest(".game-body");
+    const solutionRow = solutionCnt ? solutionCnt.querySelector(":scope > .solution") : null;
+    if(gameBodyCnt && solutionRow)
+    {
+        const bodyHeight = gameBodyCnt.getBoundingClientRect().height;
+        if(bodyHeight > 0)
+        {
+            let nonTileHeight = 0;
+            Array.from(gameBodyCnt.children).forEach(child => {
+                if(child === jumbledCnt || child === solutionCnt)
+                {
+                    return;
+                }
+
+                const style = getComputedStyle(child);
+                if(style.display === "none")
+                {
+                    return;
+                }
+
+                nonTileHeight += child.getBoundingClientRect().height;
+                nonTileHeight += (parseFloat(style.marginTop) || 0) + (parseFloat(style.marginBottom) || 0);
+            });
+
+            const jumbledStyle = getComputedStyle(jumbledCnt);
+            const solutionStyle = getComputedStyle(solutionRow);
+            const tileAreaChrome =
+                (parseFloat(jumbledStyle.paddingTop) || 0) +
+                (parseFloat(jumbledStyle.paddingBottom) || 0) +
+                (parseFloat(solutionStyle.paddingTop) || 0) +
+                (parseFloat(solutionStyle.paddingBottom) || 0);
+
+            const availableTilesHeight = bodyHeight - nonTileHeight - tileAreaChrome - gap;
+            if(availableTilesHeight > 0)
+            {
+                fitTilePx_Height = availableTilesHeight / 2;
+            }
+        }
+    }
+
+    const fitTilePx = Math.min(fitTilePx_Width, fitTilePx_Height);
     const clampedTilePx = Math.max(tileMinSize, Math.min(naturalTilePx, fitTilePx));
     const scaledFontPx = Math.max(12, clampedTilePx * fontRatio);
 
