@@ -1121,6 +1121,11 @@ input[type=range] {
         align-items: baseline;
     }
 
+    #score {
+        font-size: clamp(0.85rem, 2.7vw, 1.6rem);
+        line-height: 1;
+    }
+
     #help {
         gap: 0.35rem;
         padding: 0.25rem 0;
