@@ -633,6 +633,7 @@ div.footer a:hover {
 }
 input[type=range] {
     width: 100%;
+    height: 2rem;
     accent-color: var(--neon-purple);
 }
 
@@ -757,6 +758,44 @@ input[type=range] {
     margin-bottom: 0;
 }
 
+.howToPlay_prefs_desc {
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: var(--text-primary);
+}
+
+.howToPlay_prefs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 0.6rem;
+}
+
+.howToPlay_prefs button {
+    background: linear-gradient(135deg, rgba(124,58,237,0.7), rgba(6,182,212,0.5));
+    border: 1px solid rgba(168,85,247,0.4);
+    border-radius: 2rem;
+    color: #e5e0ff;
+    cursor: pointer;
+    font-family: var(--font-main);
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 0.4rem 0.9rem;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.howToPlay_prefs button:hover {
+    box-shadow: 0 0 18px rgba(124,58,237,0.45);
+    transform: translateY(-1px);
+}
+
+.howToPlay_warning {
+    font-size: 0.78rem;
+    color: #fda4af;
+    margin-top: 0.55rem;
+    line-height: 1.4;
+}
+
 /* ── CONFIRM MODAL ── */
 #confirmOverlay {
     position: fixed;
@@ -872,6 +911,12 @@ input[type=range] {
     text-shadow: 0 0 10px rgba(16,185,129,0.5);
 }
 
+#gameOverBody .gameOverCallout {
+    color: #ddd6fe;
+    font-weight: 700;
+    margin: 0.35rem 0 0.8rem;
+}
+
 #gameOverButtons {
     display: flex;
     gap: 0.75rem;
@@ -965,45 +1010,4 @@ input[type=range] {
     #overlay_main_volume { width: 100%; }
 
     .volumeSlider {
-        width: clamp(110px, 40vw, 170px);
-    }
-
-    #howToPlayCard {
-        width: min(96vw, 620px);
-        padding: 0.9rem;
-        max-height: 88vh;
-    }
-
-    #howToPlayBody {
-        max-height: 74vh;
-    }
-
-    .howToPlay_rules {
-        font-size: 0.8rem;
-        line-height: 1.55;
-    }
-}
-@keyframes shake {
-    10%, 90% { transform: translate(-1px,0); }
-    20%, 80% { transform: translate(2px,0); }
-    30%, 50%, 70% { transform: translate(-4px,0); }
-    40%, 60% { transform: translate(4px,0); }
-}
-@keyframes slideIn {
-    from { opacity:0; transform: translateY(-1.5rem); }
-    to   { opacity:1; transform: translateY(0); }
-}
-
-/* ── RESPONSIVE ── */
-@media (min-width: 520px) {
-    :root {
-        --tile-size: 4rem;
-        --tile-font-size: 1.8rem;
-    }
-
-    .game { max-width: var(--app-frame-max-width); }
-}
-@media (min-width: 768px) {
-    body { padding: 1rem; }
-    .game { max-width: var(--app-frame-max-width); }
-}
+        width: c

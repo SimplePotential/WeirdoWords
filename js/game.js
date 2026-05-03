@@ -6,6 +6,9 @@ const symMissed = "-";
 
 const GAME_MODE_TIMED = 0;
 const GAME_MODE_INFINITE = 1;
+const storageKey_HighScore_Timed = "WeirdoWords_HighScore_Timed";
+const storageKey_HighScore_Infinite = "WeirdoWords_HighScore_Infinite";
+const storageKey_Volume = "WeirdoWords_Volume";
 
 // ============================================================
 // GAME CONFIGURATION
@@ -73,6 +76,7 @@ let gameTimer = null;
 let gameTimerTicks = 0;
 let isGameOver = false;
 let volLevel = .5;
+let highScore = 0;
 let resizeTimer = null;
 
 let dlgConsent = null;
@@ -94,6 +98,87 @@ let sound_place = null;
 let sound_gameover = null;
 let sound_wrong = null;
 let sound_correct = null;
+
+function ClampValue(value, min, max)
+{
+    if(isNaN(value))
+    {
+        return min;
+    }
+
+    return Math.max(min, Math.min(max, value));
+}
+
+function GetStoredNumber(key, fallback, min = null, max = null)
+{
+    try
+    {
+        let value = localStorage.getItem(key);
+        if(value == null)
+        {
+            return fallback;
+        }
+
+        let parsed = parseFloat(value);
+        if(isNaN(parsed))
+        {
+            return fallback;
+        }
+
+        if(min != null && max != null)
+        {
+            parsed = ClampValue(parsed, min, max);
+        }
+
+        return parsed;
+    }
+    catch(_e)
+    {
+        return fallback;
+    }
+}
+
+function SetStoredNumber(key, value)
+{
+    try
+    {
+        localStorage.setItem(key, value.toString());
+    }
+    catch(_e)
+    {
+        // Ignore storage failures and continue with in-memory state.
+    }
+}
+
+function RemoveStoredValue(key)
+{
+    try
+    {
+        localStorage.removeItem(key);
+    }
+    catch(_e)
+    {
+        // Ignore storage failures and continue with in-memory state.
+    }
+}
+
+function SyncVolumeSliders(value)
+{
+    volSliders.forEach(s =>
+    {
+        s.value = value.toString();
+    });
+}
+
+function GetHighScoreStorageKey(mode = gameMode)
+{
+    return mode === GAME_MODE_INFINITE ? storageKey_HighScore_Infinite : storageKey_HighScore_Timed;
+}
+
+function LoadHighScore(mode = gameMode)
+{
+    highScore = GetStoredNumber(GetHighScoreStorageKey(mode), 0, 0, Number.MAX_SAFE_INTEGER);
+}
 
 function Init()
 {
@@ -137,10 +222,15 @@ function Init()
 
     gameTimerTicks = gameTimerMax;
 
+    LoadHighScore();
+
     if(volSliders.length > 0)
     {
         volLevel = parseFloat(volSliders[0].value);
     }
+
+    volLevel = GetStoredNumber(storageKey_Volume, ClampValue(volLevel, 0, 1), 0, 1);
+    SyncVolumeSliders(volLevel);
 
     SetupSounds();
 
@@ -217,6 +307,7 @@ function StartRun(mode)
     ClearGameTimer();
 
     gameMode = mode;
+    LoadHighScore(mode);
     isGameOver = false;
     solvedWords = 0;
     wordsSolvedCount = 0;
@@ -1054,10 +1145,25 @@ function mulberry32(a) {
     }
 }
 
-function CreateGameOver()
+function CreateGameOver(shouldPersistHighScore = true)
 {
     let txtBody;
     let stats = AnalyzeAttempts();
+    let highScoreMessage = "";
+    let highScoreLabel = IsInfiniteMode() ? "Infinite High Score" : "Timed Daily High Score";
+
+    let hadPriorHighScore = highScore > 0;
+
+    if(shouldPersistHighScore && score > highScore)
+    {
+        highScore = score;
+        SetStoredNumber(GetHighScoreStorageKey(), highScore);
+        highScoreMessage = hadPriorHighScore ? "New high score!" : "";
+    }
+    else if(score === highScore && score > 0)
+    {
+        highScoreMessage = "You tied the high score.";
+    }
 
     // Update all scores
     // SaveScores();
@@ -1066,6 +1172,17 @@ function CreateGameOver()
 
     txtBody = "<b>Score</b><br/>";
     txtBody += "<span>" + score + "</span>";
+
+    if(highScore > 0)
+    {
+        txtBody += "<b>" + highScoreLabel + "</b><br/>";
+        txtBody += "<span>" + highScore + "</span>";
+    }
+
+    if(highScoreMessage.length > 0)
+    {
+        txtBody += "<div class='gameOverCallout'>" + highScoreMessage + "</div>";
+    }
 
     if(IsInfiniteMode())
     {
@@ -1342,6 +1459,37 @@ function HideHowToPlayModal()
     howToPlayOverlayCnt.classList.add("hidden");
 }
 
+function ClearVolumePreference()
+{
+    volLevel = 0.5;
+    RemoveStoredValue(storageKey_Volume);
+    SyncVolumeSliders(volLevel);
+
+    if(sound_gameover)
+    {
+        sound_gameover.play();
+    }
+}
+
+function ClearHighScore()
+{
+    ShowConfirmModal(
+        "Clear High Scores?",
+        "This will permanently delete both your Timed Daily and Infinite Play high scores. This action cannot be undone.",
+        function() {
+            highScore = 0;
+            RemoveStoredValue(storageKey_HighScore_Timed);
+            RemoveStoredValue(storageKey_HighScore_Infinite);
+
+            let gameOverOverlay = document.getElementById("gameOverOverlay");
+            if(gameOverOverlay && !gameOverOverlay.classList.contains("hidden"))
+            {
+                CreateGameOver(false);
+            }
+        }
+    );
+}
+
 function ChangeVolume(sender)
 {
     let sourceSlider = sender;
@@ -1356,15 +1504,18 @@ function ChangeVolume(sender)
         return;
     }
 
-    volLevel = parseFloat(sourceSlider.value);
+    volLevel = ClampValue(parseFloat(sourceSlider.value), 0, 1);
+    sourceSlider.value = volLevel.toString();
 
     volSliders.forEach(s =>
     {
         if(s !== sourceSlider)
         {
-            s.value = sourceSlider.value;
+            s.value = volLevel.toString();
         }
     });
+
+    SetStoredNumber(storageKey_Volume, volLevel);
 
     sound_gameover.play();
 }
